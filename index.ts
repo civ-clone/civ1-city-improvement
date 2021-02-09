@@ -1,0 +1,2 @@
+import './registerAvailableBuildItems';
+import './registerRules';
