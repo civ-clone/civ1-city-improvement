@@ -22,6 +22,33 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance
     ].map(([CityImprovementType, YieldType, cost]) => new Cost_1.default(new Criterion_1.default((cityYield, city) => cityYield instanceof YieldType), new Criterion_1.default((cityYield, city) => cityImprovementRegistry
         .getByCity(city)
         .some((cityImprovement) => cityImprovement instanceof CityImprovementType)), new Effect_1.default((cityYield) => cityYield.subtract(cost)))),
+    // ...([
+    //   // [Barracks, Gold, 1, Industrialization, Automobile],
+    // ] as [typeof CityImprovement, typeof Yield, number, ...typeof Advance[]][]).map(([CityImprovementType, YieldType, cost, RequiredAdvance, ObseletionAdvance]): Cost => new Cost(
+    //   new Criterion((cityYield: Yield, city: City): boolean => cityYield instanceof YieldType),
+    //   new Criterion((cityYield: Yield, city: City): boolean => cityImprovementRegistry.getByCity(city)
+    //     .some((cityImprovement: CityImprovement): boolean => cityImprovement instanceof CityImprovementType)
+    //   ),
+    //   new Criterion((cityYield: Yield, city: City): boolean => playerResearchRegistry.getByPlayer(city.player())
+    //     .completed(RequiredAdvance)
+    //   ),
+    //   new Criterion((cityYield: Yield, city: City): boolean => playerResearchRegistry.getByPlayer(city.player())
+    //     .completed(ObseletionAdvance)
+    //   ),
+    //   new Effect((cityYield: Yield): void => cityYield.subtract(cost)),
+    // )),
+    // ...([
+    //   // [Barracks, Gold, 2, Automobile],
+    // ] as [typeof CityImprovement, typeof Yield, number, ...typeof Advance[]][]).map(([CityImprovementType, YieldType, cost, RequiredAdvance]): Cost => new Cost(
+    //   new Criterion((cityYield: Yield, city: City): boolean => cityYield instanceof YieldType),
+    //   new Criterion((cityYield: Yield, city: City): boolean => cityImprovementRegistry.getByCity(city)
+    //     .some((cityImprovement: CityImprovement): boolean => cityImprovement instanceof CityImprovementType)
+    //   ),
+    //   new Criterion((cityYield: Yield, city: City): boolean => playerResearchRegistry.getByPlayer(city.player())
+    //     .completed(RequiredAdvance)
+    //   ),
+    //   new Effect((cityYield: Yield): void => cityYield.subtract(cost)),
+    // )),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

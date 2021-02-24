@@ -8,7 +8,7 @@ import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import { Gold } from '@civ-clone/civ1-city/Yields';
 import Luxuries from '@civ-clone/base-city-yield-luxuries/Luxuries';
-import Research from '@civ-clone/civ1-science/Yields/Research';
+import { Research } from '@civ-clone/civ1-science/Yields';
 import Yield from '@civ-clone/core-yield/Yield';
 import YieldRule from '@civ-clone/core-city/Rules/Yield';
 import City from '@civ-clone/core-city/City';
