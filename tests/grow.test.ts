@@ -39,8 +39,8 @@ describe('city:grow', (): void => {
     ...improvementCreated(cityImprovementRegistry)
   );
 
-  it('should have 50% full food storage with a granary', (): void => {
-    const city = setUpCity({
+  it('should have 50% full food storage with a granary', async (): Promise<void> => {
+    const city = await setUpCity({
         ruleRegistry,
         cityGrowthRegistry,
         playerWorldRegistry,
@@ -49,23 +49,23 @@ describe('city:grow', (): void => {
 
     new Granary(city.player(), city, ruleRegistry);
 
-    ([
-      [15, 2, 30],
-      [20, 3, 40],
-      [25, 4, 50],
-      [30, 5, 60],
-      [35, 6, 70],
-      [40, 7, 80],
-      [45, 8, 90],
-      [50, 9, 100],
-    ] as [number, number, number][]).forEach(
-      ([expectedFoodStorage, expectedSize, expectedCost]): void => {
-        cityGrowth.grow();
+    (
+      [
+        [15, 2, 30],
+        [20, 3, 40],
+        [25, 4, 50],
+        [30, 5, 60],
+        [35, 6, 70],
+        [40, 7, 80],
+        [45, 8, 90],
+        [50, 9, 100],
+      ] as [number, number, number][]
+    ).forEach(([expectedFoodStorage, expectedSize, expectedCost]): void => {
+      cityGrowth.grow();
 
-        expect(cityGrowth.size()).to.equal(expectedSize);
-        expect(cityGrowth.cost().value()).to.equal(expectedCost);
-        expect(cityGrowth.progress().value()).to.equal(expectedFoodStorage);
-      }
-    );
+      expect(cityGrowth.size()).to.equal(expectedSize);
+      expect(cityGrowth.cost().value()).to.equal(expectedCost);
+      expect(cityGrowth.progress().value()).to.equal(expectedFoodStorage);
+    });
   });
 });

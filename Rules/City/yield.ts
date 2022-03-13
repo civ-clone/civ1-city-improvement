@@ -1,8 +1,8 @@
+import { Bank, Library, Marketplace, University } from '../../CityImprovements';
 import {
   CityImprovementRegistry,
   instance as cityImprovementRegistryInstance,
 } from '@civ-clone/core-city-improvement/CityImprovementRegistry';
-import { Library, Marketplace } from '../../CityImprovements';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
@@ -18,11 +18,16 @@ export const getRules: (
 ) => YieldRule[] = (
   cityImprovementRegistry: CityImprovementRegistry = cityImprovementRegistryInstance
 ): YieldRule[] => [
-  ...([
-    [Marketplace, Gold, 0.5],
-    [Marketplace, Luxuries, 0.5],
-    [Library, Research, 0.5],
-  ] as [typeof CityImprovement, typeof Yield, number][]).map(
+  ...(
+    [
+      [Marketplace, Gold, 0.5],
+      [Marketplace, Luxuries, 0.5],
+      [Bank, Gold, 0.5],
+      [Bank, Luxuries, 0.5],
+      [Library, Research, 0.5],
+      [University, Research, 0.5],
+    ] as [typeof CityImprovement, typeof Yield, number][]
+  ).map(
     ([Improvement, YieldType, multiplier]: [
       typeof CityImprovement,
       typeof Yield,

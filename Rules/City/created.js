@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = void 0;
-const CityRegistry_1 = require("@civ-clone/core-city/CityRegistry");
 const CityImprovementRegistry_1 = require("@civ-clone/core-city-improvement/CityImprovementRegistry");
+const CityRegistry_1 = require("@civ-clone/core-city/CityRegistry");
 const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const Created_1 = require("@civ-clone/core-city/Rules/Created");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");

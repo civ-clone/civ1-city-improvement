@@ -22,12 +22,23 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
         [CityImprovements_1.Marketplace, Advances_1.Currency],
         [CityImprovements_1.Palace, Advances_1.Masonry],
         [CityImprovements_1.Temple, Advances_1.CeremonialBurial],
+        [CityImprovements_1.Bank, Advances_1.Banking],
+        [CityImprovements_1.Cathedral, Advances_1.Religion],
+        [CityImprovements_1.Factory, Advances_1.Industrialization],
+        [CityImprovements_1.HydroPlant, Advances_1.Electronics],
+        [CityImprovements_1.MassTransit, Advances_1.MassProduction],
+        [CityImprovements_1.ManufacturingPlant, Advances_1.Robotics],
+        [CityImprovements_1.NuclearPlant, Advances_1.NuclearPower],
+        [CityImprovements_1.PowerPlant, Advances_1.Refining],
+        [CityImprovements_1.RecyclingCenter, Advances_1.Recycling],
+        [CityImprovements_1.SdiDefence, Advances_1.Superconductor],
+        [CityImprovements_1.University, Advances_1.University],
     ].map(([CityImprovementType, RequiredAdvance]) => new Build_1.Build(new Criterion_1.default((city, BuildItem) => BuildItem === CityImprovementType), new Effect_1.default((city) => new Criterion_1.default(() => playerResearchRegistry
         .getByPlayer(city.player())
         .completed(RequiredAdvance))))),
     ...[
-    // [Bank, Marketplace],
-    // [University, Library],
+        [CityImprovements_1.Bank, CityImprovements_1.Marketplace],
+        [CityImprovements_1.University, CityImprovements_1.Library],
     ].map(([Improvement, ...Requires]) => new Build_1.Build(new Criterion_1.default((city, BuildItem) => BuildItem === Improvement), new Effect_1.default((city) => new Criterion_1.default(() => cityImprovementRegistry
         .getByCity(city)
         .some((improvement) => Requires.some((Required) => improvement instanceof Required)))))),

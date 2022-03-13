@@ -39,16 +39,17 @@ describe('city:created', (): void => {
     ...improvementCreated(cityImprovementRegistry)
   );
 
-  it('should create a Palace in a newly created capital city', (): void => {
-    const capital = setUpCity({
+  it('should create a Palace in a newly created capital city', async (): Promise<void> => {
+    const capital = await setUpCity({
         cityGrowthRegistry,
         playerWorldRegistry,
         ruleRegistry,
         tileImprovementRegistry,
       }),
-      city = setUpCity({
+      city = await setUpCity({
         cityGrowthRegistry,
         player: capital.player(),
+        world: capital.tile().map(),
         playerWorldRegistry,
         ruleRegistry,
         tileImprovementRegistry,

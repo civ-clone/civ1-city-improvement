@@ -1,11 +1,11 @@
 import {
-  CityRegistry,
-  instance as cityRegistryInstance,
-} from '@civ-clone/core-city/CityRegistry';
-import {
   CityImprovementRegistry,
   instance as cityImprovementRegistryInstance,
 } from '@civ-clone/core-city-improvement/CityImprovementRegistry';
+import {
+  CityRegistry,
+  instance as cityRegistryInstance,
+} from '@civ-clone/core-city/CityRegistry';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,

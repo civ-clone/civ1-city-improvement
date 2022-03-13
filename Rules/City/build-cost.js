@@ -15,7 +15,18 @@ const getRules = () => [
         [CityImprovements_1.Marketplace, 80],
         [CityImprovements_1.Palace, 200],
         [CityImprovements_1.Temple, 40],
-    ].flatMap(([CityImprovementType, cost]) => BuildCost_1.buildCost(CityImprovementType, cost)),
+        [CityImprovements_1.Bank, 120],
+        [CityImprovements_1.Cathedral, 160],
+        [CityImprovements_1.Factory, 200],
+        [CityImprovements_1.HydroPlant, 240],
+        [CityImprovements_1.MassTransit, 160],
+        [CityImprovements_1.ManufacturingPlant, 320],
+        [CityImprovements_1.NuclearPlant, 160],
+        [CityImprovements_1.PowerPlant, 160],
+        [CityImprovements_1.RecyclingCenter, 200],
+        [CityImprovements_1.SdiDefence, 200],
+        [CityImprovements_1.University, 160],
+    ].flatMap(([CityImprovementType, cost]) => (0, BuildCost_1.buildCost)(CityImprovementType, cost)),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;
