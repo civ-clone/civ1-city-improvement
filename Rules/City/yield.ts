@@ -1,4 +1,17 @@
-import { Bank, Library, Marketplace, University } from '../../CityImprovements';
+import {
+  Bank,
+  Cathedral,
+  Colosseum,
+  Factory,
+  HydroPlant,
+  Library,
+  ManufacturingPlant,
+  Marketplace,
+  NuclearPlant,
+  PowerPlant,
+  Temple,
+  University,
+} from '../../CityImprovements';
 import {
   CityImprovementRegistry,
   instance as cityImprovementRegistryInstance,
@@ -7,6 +20,7 @@ import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import { Gold } from '@civ-clone/civ1-city/Yields';
+import { Production } from '@civ-clone/civ1-world/Yields';
 import Luxuries from '@civ-clone/base-city-yield-luxuries/Luxuries';
 import { Research } from '@civ-clone/civ1-science/Yields';
 import Yield from '@civ-clone/core-yield/Yield';
@@ -26,6 +40,14 @@ export const getRules: (
       [Bank, Luxuries, 0.5],
       [Library, Research, 0.5],
       [University, Research, 0.5],
+      [Factory, Production, 0.5],
+      [PowerPlant, Production, 0.5],
+      [HydroPlant, Production, 0.5],
+      [NuclearPlant, Production, 0.5],
+      [ManufacturingPlant, Production, 0.5],
+      // [RecyclingCenter, Pollution, 0.5],
+      // [HydroPlant, Pollution, 0.5],
+      // [MassTransit, Pollution, 0.5],
     ] as [typeof CityImprovement, typeof Yield, number][]
   ).map(
     ([Improvement, YieldType, multiplier]: [

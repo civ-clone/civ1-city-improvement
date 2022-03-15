@@ -6,8 +6,9 @@ const CityImprovementRegistry_1 = require("@civ-clone/core-city-improvement/City
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Yields_1 = require("@civ-clone/civ1-city/Yields");
+const Yields_2 = require("@civ-clone/civ1-world/Yields");
 const Luxuries_1 = require("@civ-clone/base-city-yield-luxuries/Luxuries");
-const Yields_2 = require("@civ-clone/civ1-science/Yields");
+const Yields_3 = require("@civ-clone/civ1-science/Yields");
 const Yield_1 = require("@civ-clone/core-city/Rules/Yield");
 const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance) => [
     ...[
@@ -15,8 +16,16 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance) 
         [CityImprovements_1.Marketplace, Luxuries_1.default, 0.5],
         [CityImprovements_1.Bank, Yields_1.Gold, 0.5],
         [CityImprovements_1.Bank, Luxuries_1.default, 0.5],
-        [CityImprovements_1.Library, Yields_2.Research, 0.5],
-        [CityImprovements_1.University, Yields_2.Research, 0.5],
+        [CityImprovements_1.Library, Yields_3.Research, 0.5],
+        [CityImprovements_1.University, Yields_3.Research, 0.5],
+        [CityImprovements_1.Factory, Yields_2.Production, 0.5],
+        [CityImprovements_1.PowerPlant, Yields_2.Production, 0.5],
+        [CityImprovements_1.HydroPlant, Yields_2.Production, 0.5],
+        [CityImprovements_1.NuclearPlant, Yields_2.Production, 0.5],
+        [CityImprovements_1.ManufacturingPlant, Yields_2.Production, 0.5],
+        // [RecyclingCenter, Pollution, 0.5],
+        // [HydroPlant, Pollution, 0.5],
+        // [MassTransit, Pollution, 0.5],
     ].map(([Improvement, YieldType, multiplier]) => new Yield_1.default(new Criterion_1.default((cityYield) => cityYield instanceof YieldType), new Criterion_1.default((cityYield, city) => cityImprovementRegistry
         .getByCity(city)
         .some((improvement) => improvement instanceof Improvement)), new Effect_1.default((cityYield) => cityYield.add(cityYield.value() * multiplier, Improvement.name)))),
