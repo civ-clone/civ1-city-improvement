@@ -20,7 +20,6 @@ import {
   Temple,
   University,
 } from '../../CityImprovements';
-import { Build, IBuildCriterion } from '@civ-clone/core-city-build/Rules/Build';
 import {
   Banking,
   CeremonialBurial,
@@ -41,6 +40,7 @@ import {
   University as UniversityAdvance,
   Writing,
 } from '@civ-clone/civ1-science/Advances';
+import { Build, IBuildCriterion } from '@civ-clone/core-city-build/Rules/Build';
 import {
   CityImprovementRegistry,
   instance as cityImprovementRegistryInstance,
@@ -121,6 +121,10 @@ export const getRules: (
     [
       [Bank, Marketplace],
       [University, Library],
+      [HydroPlant, Factory],
+      [NuclearPlant, Factory],
+      [PowerPlant, Factory],
+      [ManufacturingPlant, HydroPlant, NuclearPlant, PowerPlant],
     ] as [typeof CityImprovement, ...typeof CityImprovement[]][]
   ).map(
     ([Improvement, ...Requires]): Build =>
@@ -145,10 +149,12 @@ export const getRules: (
       )
   ),
   ...(
-    [[Courthouse, Palace]] as [
-      typeof CityImprovement,
-      ...typeof CityImprovement[]
-    ][]
+    [
+      [Courthouse, Palace],
+      [HydroPlant, NuclearPlant, PowerPlant],
+      [NuclearPlant, PowerPlant, HydroPlant],
+      [PowerPlant, HydroPlant, NuclearPlant],
+    ] as [typeof CityImprovement, ...typeof CityImprovement[]][]
   ).map(
     ([Improvement, ...Prevents]) =>
       new Build(

@@ -1,75 +1,155 @@
 import {
+  Aqueduct,
   Bank,
+  Barracks,
   Cathedral,
+  CityWalls,
   Colosseum,
+  Courthouse,
   Factory,
+  Granary,
   HydroPlant,
   Library,
   ManufacturingPlant,
   Marketplace,
+  MassTransit,
   NuclearPlant,
+  Palace,
   PowerPlant,
+  RecyclingCenter,
+  SdiDefence,
   Temple,
   University,
 } from '../../CityImprovements';
+import { Automobile, Gunpowder } from '@civ-clone/civ1-science/Advances';
 import {
   CityImprovementRegistry,
   instance as cityImprovementRegistryInstance,
 } from '@civ-clone/core-city-improvement/CityImprovementRegistry';
+import {
+  PlayerResearchRegistry,
+  instance as playerResearchRegistryInstance,
+} from '@civ-clone/core-science/PlayerResearchRegistry';
+import Advance from '@civ-clone/core-science/Advance';
+import City from '@civ-clone/core-city/City';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
+import { CityImprovementMaintenanceGold } from '../../Yields';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import { Gold } from '@civ-clone/civ1-city/Yields';
-import { Production } from '@civ-clone/civ1-world/Yields';
-import Luxuries from '@civ-clone/base-city-yield-luxuries/Luxuries';
-import { Research } from '@civ-clone/civ1-science/Yields';
 import Yield from '@civ-clone/core-yield/Yield';
 import YieldRule from '@civ-clone/core-city/Rules/Yield';
-import City from '@civ-clone/core-city/City';
 
 export const getRules: (
-  cityImprovementRegistry?: CityImprovementRegistry
+  cityImprovementRegistry?: CityImprovementRegistry,
+  playerResearchRegistry?: PlayerResearchRegistry
 ) => YieldRule[] = (
-  cityImprovementRegistry: CityImprovementRegistry = cityImprovementRegistryInstance
+  cityImprovementRegistry: CityImprovementRegistry = cityImprovementRegistryInstance,
+  playerResearchRegistry: PlayerResearchRegistry = playerResearchRegistryInstance
 ): YieldRule[] => [
   ...(
     [
-      [Marketplace, Gold, 0.5],
-      [Marketplace, Luxuries, 0.5],
-      [Bank, Gold, 0.5],
-      [Bank, Luxuries, 0.5],
-      [Library, Research, 0.5],
-      [University, Research, 0.5],
-      [Factory, Production, 0.5],
-      [PowerPlant, Production, 0.5],
-      [HydroPlant, Production, 0.5],
-      [NuclearPlant, Production, 0.5],
-      [ManufacturingPlant, Production, 0.5],
-      // [RecyclingCenter, Pollution, 0.5],
-      // [HydroPlant, Pollution, 0.5],
-      // [MassTransit, Pollution, 0.5],
-    ] as [typeof CityImprovement, typeof Yield, number][]
-  ).map(
-    ([Improvement, YieldType, multiplier]: [
+      [Aqueduct, CityImprovementMaintenanceGold, 2],
+      [Bank, CityImprovementMaintenanceGold, 3],
+      [Cathedral, CityImprovementMaintenanceGold, 3],
+      [CityWalls, CityImprovementMaintenanceGold, 2],
+      [Colosseum, CityImprovementMaintenanceGold, 2],
+      [Courthouse, CityImprovementMaintenanceGold, 1],
+      [Factory, CityImprovementMaintenanceGold, 4],
+      [Granary, CityImprovementMaintenanceGold, 1],
+      [HydroPlant, CityImprovementMaintenanceGold, 4],
+      [Library, CityImprovementMaintenanceGold, 1],
+      [ManufacturingPlant, CityImprovementMaintenanceGold, 6],
+      [Marketplace, CityImprovementMaintenanceGold, 1],
+      [MassTransit, CityImprovementMaintenanceGold, 4],
+      [NuclearPlant, CityImprovementMaintenanceGold, 2],
+      [Palace, CityImprovementMaintenanceGold, 0],
+      [PowerPlant, CityImprovementMaintenanceGold, 4],
+      [RecyclingCenter, CityImprovementMaintenanceGold, 2],
+      [SdiDefence, CityImprovementMaintenanceGold, 4],
+      [Temple, CityImprovementMaintenanceGold, 1],
+      [University, CityImprovementMaintenanceGold, 3],
+    ] as [
       typeof CityImprovement,
-      typeof Yield,
+      typeof CityImprovementMaintenanceGold,
       number
-    ]): YieldRule =>
+    ][]
+  ).map(
+    ([CityImprovementType, YieldType, cost]): YieldRule =>
       new YieldRule(
-        new Criterion(
-          (cityYield: Yield): boolean => cityYield instanceof YieldType
-        ),
-        new Criterion((cityYield: Yield, city: City): boolean =>
+        new Criterion((city: City): boolean =>
           cityImprovementRegistry
             .getByCity(city)
             .some(
-              (improvement: CityImprovement): boolean =>
-                improvement instanceof Improvement
+              (cityImprovement: CityImprovement): boolean =>
+                cityImprovement instanceof CityImprovementType
             )
         ),
-        new Effect((cityYield: Yield): void =>
-          cityYield.add(cityYield.value() * multiplier, Improvement.name)
-        )
+        new Effect((city: City): Yield => {
+          const [cityImprovement] = cityImprovementRegistry
+            .getByCity(city)
+            .filter(
+              (cityImprovement) =>
+                cityImprovement instanceof CityImprovementType
+            );
+
+          return new YieldType(cost, cityImprovement) as Yield;
+        })
+      )
+  ),
+
+  ...(
+    [
+      [Barracks, CityImprovementMaintenanceGold, 0, null, Gunpowder],
+      [Barracks, CityImprovementMaintenanceGold, 1, Gunpowder, Automobile],
+      [Barracks, CityImprovementMaintenanceGold, 2, Automobile, null],
+    ] as [
+      typeof CityImprovement,
+      typeof CityImprovementMaintenanceGold,
+      number,
+      typeof Advance | null,
+      typeof Advance | null
+    ][]
+  ).map(
+    ([
+      CityImprovementType,
+      YieldType,
+      cost,
+      RequiredAdvance,
+      ObsoletingAdvance,
+    ]): YieldRule =>
+      new YieldRule(
+        new Criterion((city: City): boolean =>
+          cityImprovementRegistry
+            .getByCity(city)
+            .some(
+              (cityImprovement: CityImprovement): boolean =>
+                cityImprovement instanceof CityImprovementType
+            )
+        ),
+        new Criterion(
+          (city: City): boolean =>
+            RequiredAdvance === null ||
+            playerResearchRegistry
+              .getByPlayer(city.player())
+              .completed(RequiredAdvance)
+        ),
+        new Criterion(
+          (city: City): boolean =>
+            ObsoletingAdvance === null ||
+            !playerResearchRegistry
+              .getByPlayer(city.player())
+              .completed(ObsoletingAdvance)
+        ),
+        new Effect((city: City): Yield => {
+          const [cityImprovement] = cityImprovementRegistry
+            .getByCity(city)
+            .filter(
+              (cityImprovement) =>
+                cityImprovement instanceof CityImprovementType
+            );
+
+          return new YieldType(cost, cityImprovement) as Yield;
+        })
       )
   ),
 ];

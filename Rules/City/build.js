@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRules = void 0;
 const CityImprovements_1 = require("../../CityImprovements");
-const Build_1 = require("@civ-clone/core-city-build/Rules/Build");
 const Advances_1 = require("@civ-clone/civ1-science/Advances");
+const Build_1 = require("@civ-clone/core-city-build/Rules/Build");
 const CityImprovementRegistry_1 = require("@civ-clone/core-city-improvement/CityImprovementRegistry");
 const PlayerResearchRegistry_1 = require("@civ-clone/core-science/PlayerResearchRegistry");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
@@ -39,10 +39,19 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
     ...[
         [CityImprovements_1.Bank, CityImprovements_1.Marketplace],
         [CityImprovements_1.University, CityImprovements_1.Library],
+        [CityImprovements_1.HydroPlant, CityImprovements_1.Factory],
+        [CityImprovements_1.NuclearPlant, CityImprovements_1.Factory],
+        [CityImprovements_1.PowerPlant, CityImprovements_1.Factory],
+        [CityImprovements_1.ManufacturingPlant, CityImprovements_1.HydroPlant, CityImprovements_1.NuclearPlant, CityImprovements_1.PowerPlant],
     ].map(([Improvement, ...Requires]) => new Build_1.Build(new Criterion_1.default((city, BuildItem) => BuildItem === Improvement), new Effect_1.default((city) => new Criterion_1.default(() => cityImprovementRegistry
         .getByCity(city)
         .some((improvement) => Requires.some((Required) => improvement instanceof Required)))))),
-    ...[[CityImprovements_1.Courthouse, CityImprovements_1.Palace]].map(([Improvement, ...Prevents]) => new Build_1.Build(new Criterion_1.default((city, BuildItem) => BuildItem === Improvement), new Effect_1.default((city) => new Criterion_1.default(() => cityImprovementRegistry
+    ...[
+        [CityImprovements_1.Courthouse, CityImprovements_1.Palace],
+        [CityImprovements_1.HydroPlant, CityImprovements_1.NuclearPlant, CityImprovements_1.PowerPlant],
+        [CityImprovements_1.NuclearPlant, CityImprovements_1.PowerPlant, CityImprovements_1.HydroPlant],
+        [CityImprovements_1.PowerPlant, CityImprovements_1.HydroPlant, CityImprovements_1.NuclearPlant],
+    ].map(([Improvement, ...Prevents]) => new Build_1.Build(new Criterion_1.default((city, BuildItem) => BuildItem === Improvement), new Effect_1.default((city) => new Criterion_1.default(() => cityImprovementRegistry
         .getByCity(city)
         .every((improvement) => !Prevents.some((Prevent) => improvement instanceof Prevent)))))),
 ];

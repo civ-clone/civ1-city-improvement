@@ -61,7 +61,6 @@ import created from '../Rules/City/created';
 import { expect } from 'chai';
 import improvementCreated from '../Rules/City/improvement-created';
 import setUpCity from '@civ-clone/civ1-city/tests/lib/setUpCity';
-import PlayerResearch from '@civ-clone/core-science/PlayerResearch';
 
 describe('city:build', (): void => {
   const ruleRegistry = new RuleRegistry(),
@@ -158,21 +157,17 @@ describe('city:build', (): void => {
   (
     [
       [Aqueduct, Construction],
+      [Cathedral, Religion],
       [CityWalls, Masonry],
       [Colosseum, Construction],
+      [Factory, Industrialization],
       [Granary, Pottery],
       [Library, Writing],
       [Marketplace, Currency],
-      [Temple, CeremonialBurial],
-      [Cathedral, Religion],
-      [Factory, Industrialization],
-      [HydroPlant, Electronics],
       [MassTransit, MassProduction],
-      [ManufacturingPlant, Robotics],
-      [NuclearPlant, NuclearPower],
-      [PowerPlant, Refining],
       [RecyclingCenter, Recycling],
       [SdiDefence, Superconductor],
+      [Temple, CeremonialBurial],
     ] as [typeof CityImprovement, typeof Advance][]
   ).forEach(([CityImprovementType, RequiredAdvance]): void => {
     it(`should be possible to build ${CityImprovementType.name} in a city once you have discovered ${RequiredAdvance.name}`, async (): Promise<void> => {
@@ -254,10 +249,22 @@ describe('city:build', (): void => {
   (
     [
       [Bank, Marketplace, Banking],
+      [HydroPlant, Factory, Electronics],
+      [ManufacturingPlant, HydroPlant, Robotics],
+      [ManufacturingPlant, NuclearPlant, Robotics],
+      [ManufacturingPlant, PowerPlant, Robotics],
+      [NuclearPlant, Factory, NuclearPower],
+      [PowerPlant, Factory, Refining],
       [University, Library, UniversityAdvance],
     ] as [typeof CityImprovement, typeof CityImprovement, ...typeof Advance[]][]
   ).forEach(([CityImprovementType, Prerequisite, ...Advances]): void => {
-    it(`should be possible to build ${CityImprovementType.name} in a city once you have built ${Prerequisite.name}`, async (): Promise<void> => {
+    it(`should be possible to build ${
+      CityImprovementType.name
+    } in a city once you have built ${
+      Prerequisite.name
+    } and discovered ${Advances.map((Advance) => Advance.name).join(
+      ', '
+    )}`, async (): Promise<void> => {
       const city = await setUpCity({
           ruleRegistry,
           playerWorldRegistry,
@@ -269,6 +276,10 @@ describe('city:build', (): void => {
           ruleRegistry
         ),
         playerResearch = playerResearchRegistry.getByPlayer(city.player());
+
+      expect(
+        cityBuild.available().map((buildItem) => buildItem.item())
+      ).to.not.include(CityImprovementType);
 
       Advances.forEach((Advance) => playerResearch.addAdvance(Advance));
 
@@ -283,4 +294,62 @@ describe('city:build', (): void => {
       ).to.include(CityImprovementType);
     });
   });
+
+  (
+    [
+      [HydroPlant, Factory, Electronics, NuclearPlant, PowerPlant],
+      [NuclearPlant, Factory, NuclearPower, PowerPlant, HydroPlant],
+      [PowerPlant, Factory, Refining, HydroPlant, NuclearPlant],
+    ] as [
+      typeof CityImprovement,
+      typeof CityImprovement,
+      typeof Advance,
+      ...typeof CityImprovement[]
+    ][]
+  ).forEach(
+    ([
+      CityImprovementType,
+      PrerequisiteImprovement,
+      Advance,
+      ...BlockingImprovements
+    ]): void => {
+      BlockingImprovements.forEach((BlockingImprovement) =>
+        it(`should not be possible to build ${CityImprovementType.name} in a city that has a ${BlockingImprovement.name}`, async (): Promise<void> => {
+          const city = await setUpCity({
+              ruleRegistry,
+              playerWorldRegistry,
+              cityGrowthRegistry,
+            }),
+            cityBuild = new CityBuild(
+              city,
+              availableCityBuildItemsRegistry,
+              ruleRegistry
+            ),
+            playerResearch = playerResearchRegistry.getByPlayer(city.player());
+
+          cityImprovementRegistry.register(
+            new PrerequisiteImprovement(city.player(), city)
+          );
+
+          expect(
+            cityBuild.available().map((buildItem) => buildItem.item())
+          ).to.not.include(CityImprovementType);
+
+          playerResearch.addAdvance(Advance);
+
+          expect(
+            cityBuild.available().map((buildItem) => buildItem.item())
+          ).to.include(CityImprovementType);
+
+          cityImprovementRegistry.register(
+            new BlockingImprovement(city.player(), city)
+          );
+
+          expect(
+            cityBuild.available().map((buildItem) => buildItem.item())
+          ).to.not.include(CityImprovementType);
+        })
+      );
+    }
+  );
 });

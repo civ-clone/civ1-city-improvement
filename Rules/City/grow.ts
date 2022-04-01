@@ -7,7 +7,7 @@ import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import FoodStorage from '@civ-clone/core-city-growth/Yields/FoodStorage';
+import { FoodStorage } from '../../Yields';
 import Grow from '@civ-clone/core-city-growth/Rules/Grow';
 
 export const getRules: (
