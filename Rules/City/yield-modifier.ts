@@ -21,7 +21,7 @@ import Effect from '@civ-clone/core-rule/Effect';
 import Low from '@civ-clone/core-rule/Priorities/Low';
 import Yield from '@civ-clone/core-yield/Yield';
 import YieldModifier from '@civ-clone/core-city/Rules/YieldModifier';
-import {reduceYield} from "@civ-clone/core-yield/lib/reduceYields";
+import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 
 export const getRules: (
   cityImprovementRegistry?: CityImprovementRegistry
@@ -61,7 +61,8 @@ export const getRules: (
                 improvement instanceof Improvement
             )
         ),
-        new Effect((city: City, yields: Yield[]): Yield =>
+        new Effect(
+          (city: City, yields: Yield[]): Yield =>
             new YieldType(
               Math.floor(reduceYield(yields, YieldType) * multiplier),
               Improvement.name

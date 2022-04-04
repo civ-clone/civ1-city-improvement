@@ -8,6 +8,7 @@ const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const Low_1 = require("@civ-clone/core-rule/Priorities/Low");
 const YieldModifier_1 = require("@civ-clone/core-city/Rules/YieldModifier");
+const reduceYields_1 = require("@civ-clone/core-yield/lib/reduceYields");
 const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance) => [
     ...[
         [CityImprovements_1.Marketplace, Yields_1.Gold, 0.5],
@@ -26,12 +27,7 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance) 
         // [MassTransit, Pollution, 0.5],
     ].map(([Improvement, YieldType, multiplier]) => new YieldModifier_1.default(new Low_1.default(), new Criterion_1.default((city) => cityImprovementRegistry
         .getByCity(city)
-        .some((improvement) => improvement instanceof Improvement)), new Effect_1.default((city, yields) => {
-        const currentTotal = yields
-            .filter((cityYield) => cityYield instanceof YieldType)
-            .reduce((total, cityYield) => total + cityYield.value(), 0);
-        yields.push(new YieldType(Math.floor(currentTotal * multiplier), Improvement.name));
-    }))),
+        .some((improvement) => improvement instanceof Improvement)), new Effect_1.default((city, yields) => new YieldType(Math.floor((0, reduceYields_1.reduceYield)(yields, YieldType) * multiplier), Improvement.name)))),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;

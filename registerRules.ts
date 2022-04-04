@@ -1,16 +1,20 @@
 import { instance as ruleRegistryInstance } from '@civ-clone/core-rule/RuleRegistry';
-import build from './Rules/City/build';
-import buildCost from './Rules/City/build-cost';
-import created from './Rules/City/created';
-import grow from './Rules/City/grow';
-import improvementCreated from './Rules/City/improvement-created';
+import cityBuild from './Rules/City/build';
+import cityBuildCost from './Rules/City/build-cost';
+import cityCreated from './Rules/City/created';
+import cityGrow from './Rules/City/grow';
+import cityImprovementCreated from './Rules/City/improvement-created';
+import cityYield from './Rules/City/yield';
+import cityYieldModifier from './Rules/City/yield-modifier';
 import unitCreated from './Rules/Unit/created';
 
 ruleRegistryInstance.register(
-  ...build(),
-  ...buildCost(),
-  ...created(),
-  ...grow(),
-  ...improvementCreated(),
+  ...cityBuild(),
+  ...cityBuildCost(),
+  ...cityCreated(),
+  ...cityGrow(),
+  ...cityImprovementCreated(),
+  ...cityYield(),
+  ...cityYieldModifier(),
   ...unitCreated()
 );
