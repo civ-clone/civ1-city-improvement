@@ -26,7 +26,7 @@ export const getRules: (
     new Criterion((unit: Unit): boolean => unit.city() !== null),
     new Criterion((unit: Unit): boolean =>
       cityImprovementRegistry
-        .getByCity(<City>unit.city())
+        .getByCity(unit.city()!)
         .some(
           (cityImprovement: CityImprovement) =>
             cityImprovement instanceof Barracks
