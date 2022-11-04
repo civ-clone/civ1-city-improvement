@@ -75,7 +75,7 @@ describe('city:yield', (): void => {
         new YieldRule(new Effect(() => new YieldType(4)))
       );
 
-      cityImprovementRegistry.register(new Improvement(city.player(), city));
+      cityImprovementRegistry.register(new Improvement(city));
 
       const yieldValue = city
         .yields()
@@ -148,13 +148,11 @@ describe('city:yield', (): void => {
           playerGovernment = new PlayerGovernment(capital.player());
 
         if (hasCapital) {
-          cityImprovementRegistry.register(
-            new Palace(capital.player(), capital, ruleRegistry)
-          );
+          cityImprovementRegistry.register(new Palace(capital, ruleRegistry));
         }
 
         cityImprovementRegistry.register(
-          new Courthouse(otherCity2.player(), otherCity2, ruleRegistry)
+          new Courthouse(otherCity2, ruleRegistry)
         );
 
         playerGovernmentRegistry.register(playerGovernment);

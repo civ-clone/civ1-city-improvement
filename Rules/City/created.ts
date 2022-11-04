@@ -31,9 +31,7 @@ export const getRules: (
         cityRegistry.getByPlayer(city.player()).length === 0
     ),
     new Effect((city: City): void =>
-      cityImprovementRegistry.register(
-        new Palace(city.player(), city, ruleRegistry)
-      )
+      cityImprovementRegistry.register(new Palace(city, ruleRegistry))
     )
   ),
 ];

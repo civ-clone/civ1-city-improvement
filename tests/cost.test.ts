@@ -113,7 +113,7 @@ describe('city:cost', (): void => {
       });
 
       cityImprovementRegistry.register(
-        new CityImprovementType(city.player(), city, ruleRegistry)
+        new CityImprovementType(city, ruleRegistry)
       );
 
       const [cityYield] = city
@@ -155,7 +155,7 @@ describe('city:cost', (): void => {
           advances.forEach((Advance) => playerResearch.addAdvance(Advance));
 
           cityImprovementRegistry.register(
-            new CityImprovementType(city.player(), city, ruleRegistry)
+            new CityImprovementType(city, ruleRegistry)
           );
 
           const [cityYield] = city

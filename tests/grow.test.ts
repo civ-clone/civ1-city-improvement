@@ -47,7 +47,7 @@ describe('city:grow', (): void => {
       }),
       cityGrowth = cityGrowthRegistry.getByCity(city);
 
-    new Granary(city.player(), city, ruleRegistry);
+    new Granary(city, ruleRegistry);
 
     (
       [

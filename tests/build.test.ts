@@ -42,6 +42,7 @@ import {
   University as UniversityAdvance,
 } from '@civ-clone/civ1-science/Advances';
 import Advance from '@civ-clone/core-science/Advance';
+import AdvanceRegistry from '@civ-clone/core-science/AdvanceRegistry';
 import AvailableCityBuildItemsRegistry from '@civ-clone/core-city-build/AvailableCityBuildItemsRegistry';
 import Buildable from '@civ-clone/core-city-build/Buildable';
 import CityBuild from '@civ-clone/core-city-build/CityBuild';
@@ -71,10 +72,11 @@ describe('city:build', (): void => {
     availableCityBuildItemsRegistry = new AvailableCityBuildItemsRegistry(),
     playerResearchRegistry = new PlayerResearchRegistry(),
     playerWorldRegistry = new PlayerWorldRegistry(),
-    tileImprovementRegistry = new TileImprovementRegistry();
+    tileImprovementRegistry = new TileImprovementRegistry(),
+    advanceRegistry = new AdvanceRegistry();
 
   ruleRegistry.register(
-    ...added(playerResearchRegistry),
+    ...added(advanceRegistry, playerResearchRegistry, ruleRegistry),
     ...build(cityImprovementRegistry, playerResearchRegistry),
     ...cityCreated(
       tileImprovementRegistry,
@@ -86,6 +88,27 @@ describe('city:build', (): void => {
     ),
     ...created(cityRegistry, cityImprovementRegistry, ruleRegistry),
     ...improvementCreated(cityImprovementRegistry)
+  );
+
+  advanceRegistry.register(
+    Banking,
+    CeremonialBurial,
+    CodeOfLaws,
+    Construction,
+    Currency,
+    Electronics,
+    Industrialization,
+    Masonry,
+    MassProduction,
+    NuclearPower,
+    Pottery,
+    Recycling,
+    Refining,
+    Religion,
+    Robotics,
+    Superconductor,
+    Writing,
+    UniversityAdvance
   );
 
   availableCityBuildItemsRegistry.register(
@@ -126,9 +149,7 @@ describe('city:build', (): void => {
         ruleRegistry
       );
 
-    cityImprovementRegistry.register(
-      new Barracks(city.player(), city, ruleRegistry)
-    );
+    cityImprovementRegistry.register(new Barracks(city, ruleRegistry));
 
     expect(
       cityBuild.available().map((buildItem) => buildItem.item())
@@ -197,57 +218,6 @@ describe('city:build', (): void => {
 
   (
     [
-      [Courthouse, CodeOfLaws],
-      [Palace, Masonry],
-    ] as [typeof CityImprovement, typeof Advance][]
-  ).forEach(([CityImprovementType, RequiredAdvance]): void => {
-    it(`should be possible to build ${CityImprovementType.name} in a city once you have discovered ${RequiredAdvance.name}, but not in the capital`, async (): Promise<void> => {
-      const capital = await setUpCity({
-          ruleRegistry,
-          playerWorldRegistry,
-          cityGrowthRegistry,
-        }),
-        city = await setUpCity({
-          world: capital.tile().map(),
-          ruleRegistry,
-          player: capital.player(),
-          playerWorldRegistry,
-          cityGrowthRegistry,
-        }),
-        capitalBuild = new CityBuild(
-          capital,
-          availableCityBuildItemsRegistry,
-          ruleRegistry
-        ),
-        cityBuild = new CityBuild(
-          city,
-          availableCityBuildItemsRegistry,
-          ruleRegistry
-        ),
-        playerResearch = playerResearchRegistry.getByPlayer(capital.player());
-
-      expect(
-        capitalBuild.available().map((buildItem) => buildItem.item())
-      ).to.not.include(CityImprovementType);
-      expect(
-        cityBuild.available().map((buildItem) => buildItem.item())
-      ).to.not.include(CityImprovementType);
-
-      playerResearch.addAdvance(RequiredAdvance);
-
-      expect(
-        capitalBuild.available().map((buildItem) => buildItem.item()),
-        `Shouldn't have ${CityImprovementType.name} available in capital`
-      ).to.not.include(CityImprovementType);
-      expect(
-        cityBuild.available().map((buildItem) => buildItem.item()),
-        `Should have ${CityImprovementType.name} available in non-capital`
-      ).to.include(CityImprovementType);
-    });
-  });
-
-  (
-    [
       [Bank, Marketplace, Banking],
       [HydroPlant, Factory, Electronics],
       [ManufacturingPlant, HydroPlant, Robotics],
@@ -287,7 +257,7 @@ describe('city:build', (): void => {
         cityBuild.available().map((buildItem) => buildItem.item())
       ).to.not.include(CityImprovementType);
 
-      cityImprovementRegistry.register(new Prerequisite(city.player(), city));
+      cityImprovementRegistry.register(new Prerequisite(city));
 
       expect(
         cityBuild.available().map((buildItem) => buildItem.item())
@@ -300,6 +270,7 @@ describe('city:build', (): void => {
       [HydroPlant, Factory, Electronics, NuclearPlant, PowerPlant],
       [NuclearPlant, Factory, NuclearPower, PowerPlant, HydroPlant],
       [PowerPlant, Factory, Refining, HydroPlant, NuclearPlant],
+      [Courthouse, CodeOfLaws, Palace],
     ] as [
       typeof CityImprovement,
       typeof CityImprovement,
@@ -327,9 +298,7 @@ describe('city:build', (): void => {
             ),
             playerResearch = playerResearchRegistry.getByPlayer(city.player());
 
-          cityImprovementRegistry.register(
-            new PrerequisiteImprovement(city.player(), city)
-          );
+          cityImprovementRegistry.register(new PrerequisiteImprovement(city));
 
           expect(
             cityBuild.available().map((buildItem) => buildItem.item())
@@ -341,9 +310,7 @@ describe('city:build', (): void => {
             cityBuild.available().map((buildItem) => buildItem.item())
           ).to.include(CityImprovementType);
 
-          cityImprovementRegistry.register(
-            new BlockingImprovement(city.player(), city)
-          );
+          cityImprovementRegistry.register(new BlockingImprovement(city));
 
           expect(
             cityBuild.available().map((buildItem) => buildItem.item())
