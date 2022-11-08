@@ -1439,7 +1439,7 @@
 
 "@civ-clone/civ1-city-improvement@github:civ-clone/civ1-city-improvement":
   version "0.1.0"
-  resolved "https://codeload.github.com/civ-clone/civ1-city-improvement/tar.gz/86c42e76c4d738289b1edaf79c6a2a342b6809cc"
+  resolved "https://codeload.github.com/civ-clone/civ1-city-improvement/tar.gz/f62be9f026723a1bfc04df1c5e39ec4e6f52568a"
   dependencies:
     "@civ-clone/base-city-improvement-aqueduct" "^0.1.0"
     "@civ-clone/base-city-improvement-bank" "^0.1.0"
@@ -1482,8 +1482,11 @@
 
 "@civ-clone/civ1-city@github:civ-clone/civ1-city":
   version "0.1.0"
-  resolved "https://codeload.github.com/civ-clone/civ1-city/tar.gz/156b0ef15ae60c13e8f71c0900bd2071b6776a99"
+  resolved "https://codeload.github.com/civ-clone/civ1-city/tar.gz/e55ce4260c681e19e0251ee0bceb295e5897d103"
   dependencies:
+    "@civ-clone/base-city-improvement-courthouse" "^0.1.0"
+    "@civ-clone/base-city-improvement-palace" "^0.1.0"
+    "@civ-clone/base-city-yield-corruption" "^0.1.0"
     "@civ-clone/base-city-yield-gold" "^0.1.0"
     "@civ-clone/base-city-yield-happiness" "^0.1.0"
     "@civ-clone/base-city-yield-luxuries" "^0.1.0"
@@ -1500,7 +1503,7 @@
     "@civ-clone/core-city" "^0.1.0"
     "@civ-clone/core-city-build" "^0.1.0"
     "@civ-clone/core-city-growth" "^0.1.0"
-    "@civ-clone/core-city-happiness" "github:civ-clone/core-city-happiness"
+    "@civ-clone/core-city-happiness" "^0.1.0"
     "@civ-clone/core-city-improvement" "^0.1.2"
     "@civ-clone/core-engine" "^0.1.0"
     "@civ-clone/core-government" "^0.1.0"
@@ -1768,14 +1771,6 @@
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@civ-clone/core-city-happiness/-/core-city-happiness-0.1.1.tgz#81d405c9649f7325ebe02c3f93d0677013dddb51"
   integrity sha512-EYWs808f5W8Fha+3GUDIc3Eyht3jpkVo8J1tHkyj4lddBHZ5XNXFian5JTLscikFGInsunQQ4gzGr6AmJ9KeIw==
-  dependencies:
-    "@civ-clone/core-city" "^0.1.0"
-    "@civ-clone/core-rule" "^0.1.0"
-    "@civ-clone/core-yield" "^0.1.0"
-
-"@civ-clone/core-city-happiness@github:civ-clone/core-city-happiness":
-  version "0.1.0"
-  resolved "https://codeload.github.com/civ-clone/core-city-happiness/tar.gz/77928beba27f52e0980b7c4d527423c69bf52688"
   dependencies:
     "@civ-clone/core-city" "^0.1.0"
     "@civ-clone/core-rule" "^0.1.0"
