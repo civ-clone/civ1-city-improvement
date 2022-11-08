@@ -190,7 +190,7 @@ describe('city:build', (): void => {
       [SdiDefence, Superconductor],
       [Temple, CeremonialBurial],
     ] as [typeof CityImprovement, typeof Advance][]
-  ).forEach(([CityImprovementType, RequiredAdvance]): void => {
+  ).forEach(([CityImprovementType, RequiredAdvance]) =>
     it(`should be possible to build ${CityImprovementType.name} in a city once you have discovered ${RequiredAdvance.name}`, async (): Promise<void> => {
       const city = await setUpCity({
           ruleRegistry,
@@ -213,8 +213,8 @@ describe('city:build', (): void => {
       expect(
         cityBuild.available().map((buildItem) => buildItem.item())
       ).to.include(CityImprovementType);
-    });
-  });
+    })
+  );
 
   (
     [

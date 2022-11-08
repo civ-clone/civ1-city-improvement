@@ -7,7 +7,6 @@ import cityCreated from './Rules/City/created';
 import cityDestroyed from './Rules/City/destroyed';
 import cityGrow from './Rules/City/grow';
 import cityImprovementCreated from './Rules/City/improvement-created';
-import cityYield from './Rules/City/yield';
 import cityYieldModifier from './Rules/City/yield-modifier';
 import unitCreated from './Rules/Unit/created';
 
@@ -20,7 +19,6 @@ ruleRegistryInstance.register(
   ...cityDestroyed(),
   ...cityGrow(),
   ...cityImprovementCreated(),
-  ...cityYield(),
   ...cityYieldModifier(),
   ...unitCreated()
 );

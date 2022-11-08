@@ -1,13 +1,4 @@
 import {
-  Bank,
-  Courthouse,
-  Library,
-  Marketplace,
-  Palace,
-  University,
-} from '../CityImprovements';
-import { Corruption, Gold, Research, Trade } from '../Yields';
-import {
   Anarchy,
   Communism,
   Democracy,
@@ -15,6 +6,20 @@ import {
   Monarchy,
   Republic,
 } from '@civ-clone/civ1-government/Governments';
+import {
+  Bank,
+  Courthouse,
+  Factory,
+  HydroPlant,
+  Library,
+  ManufacturingPlant,
+  Marketplace,
+  NuclearPlant,
+  Palace,
+  PowerPlant,
+  University,
+} from '../CityImprovements';
+import { Corruption, Gold, Luxuries, Production, Research } from '../Yields';
 import {
   generateGenerator,
   generateWorld,
@@ -32,42 +37,52 @@ import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import Yield from '@civ-clone/core-yield/Yield';
 import YieldRule from '@civ-clone/core-city/Rules/Yield';
 import cityCost from '../Rules/City/cost';
-import cityYield from '../Rules/City/yield';
+import cityYield from '@civ-clone/civ1-city/Rules/City/yield';
 import cityYieldModifier from '../Rules/City/yield-modifier';
 import { expect } from 'chai';
 import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 import setUpCity from '@civ-clone/civ1-city/tests/lib/setUpCity';
+import Priority from '@civ-clone/core-rule/Priority';
+import Trade from '@civ-clone/base-terrain-yield-trade/Trade';
 
 describe('city:yield', (): void => {
   const ruleRegistry = new RuleRegistry(),
     cityImprovementRegistry = new CityImprovementRegistry(),
     playerResearchRegistry = new PlayerResearchRegistry(),
-    playerWorldRegistry = new PlayerWorldRegistry(),
-    playerGovernmentRegistry = new PlayerGovernmentRegistry();
+    playerGovernmentRegistry = new PlayerGovernmentRegistry(),
+    playerWorldRegistry = new PlayerWorldRegistry();
 
   ruleRegistry.register(
-    new YieldRule(new Effect(() => new Trade(8))),
+    new YieldRule(new Priority(0), new Effect(() => new Trade(8))),
     ...cityCost(cityImprovementRegistry, playerResearchRegistry),
-    ...cityYield(
-      cityImprovementRegistry,
-      playerResearchRegistry,
-      playerGovernmentRegistry
-    ),
+    ...cityYield(cityImprovementRegistry, playerGovernmentRegistry),
     ...cityYieldModifier(cityImprovementRegistry)
   );
 
   (
     [
-      [Gold, Marketplace],
-      [Gold, Bank],
-      [Research, Library],
-      [Research, University],
-    ] as [typeof Yield, typeof CityImprovement][]
-  ).forEach(([YieldType, Improvement]) =>
-    it(`should provide 50% additional ${YieldType.name} in a city with a ${Improvement.name}`, async (): Promise<void> => {
+      [Marketplace, Gold, 0.5],
+      [Marketplace, Luxuries, 0.5],
+      [Bank, Gold, 0.5],
+      [Bank, Luxuries, 0.5],
+      [Library, Research, 0.5],
+      [University, Research, 0.5],
+      [Factory, Production, 0.5],
+      [PowerPlant, Production, 0.5],
+      [HydroPlant, Production, 0.5],
+      [NuclearPlant, Production, 0.5],
+      [ManufacturingPlant, Production, 0.5],
+    ] as [typeof CityImprovement, typeof Yield, number][]
+  ).forEach(([Improvement, YieldType, difference]) =>
+    it(`should provide ${difference * 100}% ${
+      difference < 0 ? 'less' : 'more'
+    } ${YieldType.name} in a city with a ${
+      Improvement.name
+    }`, async (): Promise<void> => {
       const ruleRegistry = new RuleRegistry(),
         city = await setUpCity({
           ruleRegistry,
+          playerWorldRegistry,
         });
 
       ruleRegistry.register(
@@ -82,7 +97,7 @@ describe('city:yield', (): void => {
         .filter((cityYield: Yield): boolean => cityYield instanceof YieldType)
         .reduce((total, cityYield) => total + cityYield.value(), 0);
 
-      expect(yieldValue).to.equal(6);
+      expect(yieldValue).to.equal(4 + 4 * difference);
     })
   );
 
