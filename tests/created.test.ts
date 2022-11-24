@@ -13,7 +13,7 @@ import unitCreated from '../Rules/Unit/created';
 import PlayerWorldRegistry from '@civ-clone/core-player-world/PlayerWorldRegistry';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import { Palace } from '../CityImprovements';
-import improvementCreated from '../Rules/City/improvement-created';
+import improvementCreated from '../Rules/CityImprovement/created';
 
 describe('city:created', (): void => {
   const ruleRegistry = new RuleRegistry(),

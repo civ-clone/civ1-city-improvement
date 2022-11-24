@@ -60,7 +60,7 @@ import build from '../Rules/City/build';
 import cityCreated from '@civ-clone/civ1-city/Rules/City/created';
 import created from '../Rules/City/created';
 import { expect } from 'chai';
-import improvementCreated from '../Rules/City/improvement-created';
+import improvementCreated from '../Rules/CityImprovement/created';
 import setUpCity from '@civ-clone/civ1-city/tests/lib/setUpCity';
 
 describe('city:build', (): void => {

@@ -13,4 +13,4 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;
-//# sourceMappingURL=improvement-created.js.map
+//# sourceMappingURL=created.js.map

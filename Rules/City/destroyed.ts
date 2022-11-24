@@ -20,9 +20,7 @@ export const getRules: (
     new Effect((city: City): void =>
       cityImprovementRegistry
         .getByCity(city)
-        .forEach((cityImprovement) =>
-          cityImprovementRegistry.unregister(cityImprovement)
-        )
+        .forEach((cityImprovement) => cityImprovement.destroy())
     )
   ),
 ];

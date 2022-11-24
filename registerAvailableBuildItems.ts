@@ -22,30 +22,27 @@ import {
   University,
 } from './CityImprovements';
 import { instance as availableCityBuildItemsRegistryInstance } from '@civ-clone/core-city-build/AvailableCityBuildItemsRegistry';
-import Buildable from '@civ-clone/core-city-build/Buildable';
 
 availableCityBuildItemsRegistryInstance.register(
-  ...([
-    Aqueduct,
-    Bank,
-    Barracks,
-    Cathedral,
-    CityWalls,
-    Colosseum,
-    Courthouse,
-    Factory,
-    Granary,
-    HydroPlant,
-    Library,
-    ManufacturingPlant,
-    Marketplace,
-    MassTransit,
-    NuclearPlant,
-    Palace,
-    PowerPlant,
-    RecyclingCenter,
-    SdiDefence,
-    Temple,
-    University,
-  ] as unknown as typeof Buildable[])
+  Aqueduct,
+  Bank,
+  Barracks,
+  Cathedral,
+  CityWalls,
+  Colosseum,
+  Courthouse,
+  Factory,
+  Granary,
+  HydroPlant,
+  Library,
+  ManufacturingPlant,
+  Marketplace,
+  MassTransit,
+  NuclearPlant,
+  Palace,
+  PowerPlant,
+  RecyclingCenter,
+  SdiDefence,
+  Temple,
+  University
 );

@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import cityGrow from '@civ-clone/civ1-city/Rules/City/grow';
 import grow from '../Rules/City/grow';
 import created from '@civ-clone/civ1-city/Rules/City/created';
-import improvementCreated from '../Rules/City/improvement-created';
+import improvementCreated from '../Rules/CityImprovement/created';
 import setUpCity from '@civ-clone/civ1-city/tests/lib/setUpCity';
 import CityBuildRegistry from '@civ-clone/core-city-build/CityBuildRegistry';
 import AvailableCityBuildItemsRegistry from '@civ-clone/core-city-build/AvailableCityBuildItemsRegistry';
