@@ -125,7 +125,7 @@ export const getRules: (
       [NuclearPlant, Factory],
       [PowerPlant, Factory],
       [ManufacturingPlant, HydroPlant, NuclearPlant, PowerPlant],
-    ] as [typeof CityImprovement, ...typeof CityImprovement[]][]
+    ] as [typeof CityImprovement, ...(typeof CityImprovement)[]][]
   ).map(
     ([Improvement, ...Requires]): Build =>
       new Build(
@@ -154,7 +154,7 @@ export const getRules: (
       [HydroPlant, NuclearPlant, PowerPlant],
       [NuclearPlant, PowerPlant, HydroPlant],
       [PowerPlant, HydroPlant, NuclearPlant],
-    ] as [typeof CityImprovement, ...typeof CityImprovement[]][]
+    ] as [typeof CityImprovement, ...(typeof CityImprovement)[]][]
   ).map(
     ([Improvement, ...Prevents]) =>
       new Build(

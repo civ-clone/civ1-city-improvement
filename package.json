@@ -9,7 +9,6 @@
   ],
   "author": "dom111 <dom111@users.noreply.github.com>",
   "license": "MIT",
-  "private": false,
   "scripts": {
     "build": "npm run ts:compile && npm run prettier:format",
     "prettier:check": "prettier --config .prettierrc '**/*.ts'",
@@ -38,31 +37,6 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
-    "@civ-clone/base-city-improvement-aqueduct": "^0.1.0",
-    "@civ-clone/base-city-improvement-bank": "^0.1.0",
-    "@civ-clone/base-city-improvement-barracks": "^0.1.0",
-    "@civ-clone/base-city-improvement-cathedral": "^0.1.0",
-    "@civ-clone/base-city-improvement-citywalls": "^0.1.0",
-    "@civ-clone/base-city-improvement-colosseum": "^0.1.0",
-    "@civ-clone/base-city-improvement-courthouse": "^0.1.0",
-    "@civ-clone/base-city-improvement-factory": "^0.1.0",
-    "@civ-clone/base-city-improvement-granary": "^0.1.0",
-    "@civ-clone/base-city-improvement-hydroplant": "^0.1.0",
-    "@civ-clone/base-city-improvement-library": "^0.1.0",
-    "@civ-clone/base-city-improvement-manufacturingplant": "^0.1.0",
-    "@civ-clone/base-city-improvement-marketplace": "^0.1.0",
-    "@civ-clone/base-city-improvement-masstransit": "^0.1.0",
-    "@civ-clone/base-city-improvement-nuclearplant": "^0.1.0",
-    "@civ-clone/base-city-improvement-palace": "^0.1.0",
-    "@civ-clone/base-city-improvement-powerplant": "^0.1.0",
-    "@civ-clone/base-city-improvement-recyclingcenter": "^0.1.0",
-    "@civ-clone/base-city-improvement-sdidefence": "^0.1.0",
-    "@civ-clone/base-city-improvement-temple": "^0.1.0",
-    "@civ-clone/base-city-improvement-university": "^0.1.0",
-    "@civ-clone/base-city-yield-city-improvement-maintenance-gold": "^0.1.0",
-    "@civ-clone/base-city-yield-corruption": "^0.1.0",
-    "@civ-clone/base-city-yield-gold": "^0.1.0",
-    "@civ-clone/base-terrain-yield-trade": "^0.1.0",
     "@civ-clone/civ1-science": "github:civ-clone/civ1-science",
     "@civ-clone/civ1-unit": "github:civ-clone/civ1-unit",
     "@civ-clone/core-city": "^0.1.0",
@@ -75,6 +49,7 @@
     "@civ-clone/core-science": "^0.1.0",
     "@civ-clone/core-unit": "^0.1.0",
     "@civ-clone/core-unit-improvement": "^0.1.0",
-    "@civ-clone/core-yield": "^0.1.0"
+    "@civ-clone/core-yield": "^0.1.0",
+    "@civ-clone/library-city": "^0.1.0"
   }
 }

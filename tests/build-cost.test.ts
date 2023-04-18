@@ -63,7 +63,7 @@ describe('city:build-cost', (): void => {
       SdiDefence,
       Temple,
       University,
-    ] as unknown as typeof Buildable[])
+    ] as unknown as (typeof Buildable)[])
   );
 
   (

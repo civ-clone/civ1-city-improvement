@@ -134,7 +134,7 @@ describe('city:cost', (): void => {
       [Barracks, 0, Gold],
       [Barracks, 1, Gold, Gunpowder],
       [Barracks, 2, Gold, Gunpowder, Automobile],
-    ] as [typeof CityImprovement, number, typeof Yield, ...typeof Advance[]][]
+    ] as [typeof CityImprovement, number, typeof Yield, ...(typeof Advance)[]][]
   ).forEach(
     ([CityImprovementType, expectedCost, YieldType, ...advances]): void => {
       it(

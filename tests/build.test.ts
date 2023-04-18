@@ -134,7 +134,7 @@ describe('city:build', (): void => {
       SdiDefence,
       Temple,
       University,
-    ] as unknown as typeof Buildable[])
+    ] as unknown as (typeof Buildable)[])
   );
 
   it('should not be possible to build an improvement in a city that already contains one', async (): Promise<void> => {
@@ -156,7 +156,7 @@ describe('city:build', (): void => {
     ).to.not.include(Barracks);
   });
 
-  ([Barracks] as typeof CityImprovement[]).forEach((Improvement): void => {
+  ([Barracks] as (typeof CityImprovement)[]).forEach((Improvement): void => {
     it(`should be possible to build ${Improvement.name} in a city without discovering a specific advance`, async (): Promise<void> => {
       const city = await setUpCity({
           ruleRegistry,
@@ -226,7 +226,11 @@ describe('city:build', (): void => {
       [NuclearPlant, Factory, NuclearPower],
       [PowerPlant, Factory, Refining],
       [University, Library, UniversityAdvance],
-    ] as [typeof CityImprovement, typeof CityImprovement, ...typeof Advance[]][]
+    ] as [
+      typeof CityImprovement,
+      typeof CityImprovement,
+      ...(typeof Advance)[]
+    ][]
   ).forEach(([CityImprovementType, Prerequisite, ...Advances]): void => {
     it(`should be possible to build ${
       CityImprovementType.name
@@ -275,7 +279,7 @@ describe('city:build', (): void => {
       typeof CityImprovement,
       typeof CityImprovement,
       typeof Advance,
-      ...typeof CityImprovement[]
+      ...(typeof CityImprovement)[]
     ][]
   ).forEach(
     ([
