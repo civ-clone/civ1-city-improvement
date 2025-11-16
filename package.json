@@ -18,6 +18,7 @@
     "ts:compile": "tsc --build tsconfig.json"
   },
   "devDependencies": {
+    "@civ-clone/base-city-improvement-barracks": "^0.1.0",
     "@civ-clone/civ1-city": "github:civ-clone/civ1-city",
     "@civ-clone/civ1-government": "github:civ-clone/civ1-government",
     "@civ-clone/civ1-world": "github:civ-clone/civ1-world",
