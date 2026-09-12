@@ -7,13 +7,14 @@ import City from '@civ-clone/core-city/City';
 import Effect from '@civ-clone/core-rule/Effect';
 import { Palace } from '../../CityImprovements';
 import Wonder from '@civ-clone/core-wonder/Wonder';
+import { instance as rngInstance } from '@civ-clone/core-random';
 
 export const getRules: (
   cityImprovementRegistry?: CityImprovementRegistry,
   randomNumberGenerator?: () => number
 ) => Captured[] = (
   cityImprovementRegistry: CityImprovementRegistry = cityImprovementRegistryInstance,
-  randomNumberGenerator: () => number = () => Math.random()
+  randomNumberGenerator: () => number = rngInstance
 ): Captured[] => [
   new Captured(
     new Effect((capturedCity: City): void => {

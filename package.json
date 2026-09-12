@@ -45,6 +45,7 @@
     "@civ-clone/core-city-growth": "^0.1.0",
     "@civ-clone/core-city-improvement": "^0.1.0",
     "@civ-clone/core-engine": "^0.1.0",
+    "@civ-clone/core-random": "^0.1.0",
     "@civ-clone/core-registry": "^0.1.0",
     "@civ-clone/core-rule": "^0.1.0",
     "@civ-clone/core-science": "^0.1.0",

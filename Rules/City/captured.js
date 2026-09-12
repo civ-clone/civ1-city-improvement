@@ -6,7 +6,8 @@ const Captured_1 = require("@civ-clone/core-city/Rules/Captured");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const CityImprovements_1 = require("../../CityImprovements");
 const Wonder_1 = require("@civ-clone/core-wonder/Wonder");
-const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, randomNumberGenerator = () => Math.random()) => [
+const core_random_1 = require("@civ-clone/core-random");
+const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, randomNumberGenerator = core_random_1.instance) => [
     new Captured_1.default(new Effect_1.default((capturedCity) => {
         const cityImprovements = cityImprovementRegistry
             .getByCity(capturedCity)
