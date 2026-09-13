@@ -5,6 +5,7 @@ import CityRegistry from '@civ-clone/core-city/CityRegistry';
 import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import TileImprovementRegistry from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import UnitImprovementRegistry from '@civ-clone/core-unit-improvement/UnitImprovementRegistry';
+import WorkedTileRegistry from '@civ-clone/core-city/WorkedTileRegistry';
 import cityCreated from '@civ-clone/civ1-city/Rules/City/created';
 import created from '../Rules/City/created';
 import { expect } from 'chai';
@@ -23,7 +24,8 @@ describe('city:created', (): void => {
     cityRegistry = new CityRegistry(),
     playerWorldRegistry = new PlayerWorldRegistry(),
     tileImprovementRegistry = new TileImprovementRegistry(),
-    unitImprovementRegistry = new UnitImprovementRegistry();
+    unitImprovementRegistry = new UnitImprovementRegistry(),
+    workedTileRegistry = new WorkedTileRegistry(ruleRegistry);
 
   ruleRegistry.register(
     ...cityCreated(
@@ -32,7 +34,10 @@ describe('city:created', (): void => {
       cityGrowthRegistry,
       cityRegistry,
       playerWorldRegistry,
-      ruleRegistry
+      ruleRegistry,
+      undefined,
+      undefined,
+      workedTileRegistry
     ),
     ...created(cityRegistry, cityImprovementRegistry, ruleRegistry),
     ...unitCreated(cityImprovementRegistry, unitImprovementRegistry),
@@ -45,6 +50,7 @@ describe('city:created', (): void => {
         playerWorldRegistry,
         ruleRegistry,
         tileImprovementRegistry,
+        workedTileRegistry,
       }),
       city = await setUpCity({
         cityGrowthRegistry,
@@ -53,6 +59,7 @@ describe('city:created', (): void => {
         playerWorldRegistry,
         ruleRegistry,
         tileImprovementRegistry,
+        workedTileRegistry,
       });
 
     expect(

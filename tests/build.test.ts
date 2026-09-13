@@ -76,7 +76,11 @@ describe('city:build', (): void => {
     advanceRegistry = new AdvanceRegistry();
 
   ruleRegistry.register(
-    ...added(advanceRegistry, playerResearchRegistry, ruleRegistry),
+    // `() => 0` grants each new player zero starting advances. Left to
+    // `Math.random`, the rule hands out up to three at random, and every
+    // `to.not.include` assertion below becomes a coin toss on whether the
+    // player happened to start with the advance the test is about to add.
+    ...added(advanceRegistry, playerResearchRegistry, ruleRegistry, () => 0),
     ...build(cityImprovementRegistry, playerResearchRegistry),
     ...cityCreated(
       tileImprovementRegistry,

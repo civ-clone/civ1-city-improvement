@@ -13,6 +13,7 @@ import CityBuildRegistry from '@civ-clone/core-city-build/CityBuildRegistry';
 import AvailableCityBuildItemsRegistry from '@civ-clone/core-city-build/AvailableCityBuildItemsRegistry';
 import PlayerWorldRegistry from '@civ-clone/core-player-world/PlayerWorldRegistry';
 import TileImprovementRegistry from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
+import WorkedTileRegistry from '@civ-clone/core-city/WorkedTileRegistry';
 
 describe('city:grow', (): void => {
   const ruleRegistry = new RuleRegistry(),
@@ -22,10 +23,11 @@ describe('city:grow', (): void => {
     cityImprovementRegistry = new CityImprovementRegistry(),
     tileImprovementRegistry = new TileImprovementRegistry(),
     availableCityBuildItemsRegistry = new AvailableCityBuildItemsRegistry(),
-    playerWorldRegistry = new PlayerWorldRegistry();
+    playerWorldRegistry = new PlayerWorldRegistry(),
+    workedTileRegistry = new WorkedTileRegistry(ruleRegistry);
 
   ruleRegistry.register(
-    ...cityGrow(cityGrowthRegistry, playerWorldRegistry),
+    ...cityGrow(cityGrowthRegistry, playerWorldRegistry, workedTileRegistry),
     ...created(
       tileImprovementRegistry,
       cityBuildRegistry,
@@ -33,7 +35,9 @@ describe('city:grow', (): void => {
       cityRegistry,
       playerWorldRegistry,
       ruleRegistry,
-      availableCityBuildItemsRegistry
+      availableCityBuildItemsRegistry,
+      undefined,
+      workedTileRegistry
     ),
     ...grow(cityImprovementRegistry),
     ...improvementCreated(cityImprovementRegistry)
@@ -44,6 +48,7 @@ describe('city:grow', (): void => {
         ruleRegistry,
         cityGrowthRegistry,
         playerWorldRegistry,
+        workedTileRegistry,
       }),
       cityGrowth = cityGrowthRegistry.getByCity(city);
 
