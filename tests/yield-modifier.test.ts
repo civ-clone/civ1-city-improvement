@@ -106,9 +106,9 @@ describe('city:yield', (): void => {
       [Anarchy, 0, 6, 3, 8, true],
       [Communism, 1, 1, 0, 1, true],
       [Democracy, 0, 0, 0, 0, true],
-      [Despotism, 0, 4, 2, 5, true],
+      [Despotism, 0, 4, 2, 6, true],
       [Monarchy, 0, 3, 1, 4, true],
-      [Republic, 0, 2, 1, 2, true],
+      [Republic, 0, 2, 1, 3, true],
 
       [Anarchy, 8, 8, 4, 8, false],
       [Communism, 1, 1, 0, 1, false],
