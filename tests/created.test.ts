@@ -79,4 +79,54 @@ describe('city:created', (): void => {
         )
     ).to.false;
   });
+
+  it('should move the capital when a Palace is built in another city', async (): Promise<void> => {
+    const capital = await setUpCity({
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        ruleRegistry,
+        tileImprovementRegistry,
+        workedTileRegistry,
+      }),
+      city = await setUpCity({
+        cityGrowthRegistry,
+        player: capital.player(),
+        world: capital.tile().map(),
+        playerWorldRegistry,
+        ruleRegistry,
+        tileImprovementRegistry,
+        workedTileRegistry,
+      }),
+      otherCapital = await setUpCity({
+        cityGrowthRegistry,
+        world: capital.tile().map(),
+        playerWorldRegistry,
+        ruleRegistry,
+        tileImprovementRegistry,
+        workedTileRegistry,
+      }),
+      hasPalace = (target: typeof capital): boolean =>
+        cityImprovementRegistry
+          .getByCity(target)
+          .some(
+            (cityImprovement: CityImprovement): boolean =>
+              cityImprovement instanceof Palace
+          ),
+      [oldPalace] = cityImprovementRegistry
+        .getByCity(capital)
+        .filter(
+          (cityImprovement: CityImprovement): boolean =>
+            cityImprovement instanceof Palace
+        );
+
+    expect(hasPalace(capital)).to.true;
+    expect(hasPalace(otherCapital)).to.true;
+
+    new Palace(city, ruleRegistry);
+
+    expect(oldPalace.destroyed()).to.true;
+    expect(hasPalace(capital)).to.false;
+    expect(hasPalace(city)).to.true;
+    expect(hasPalace(otherCapital)).to.true;
+  });
 });
