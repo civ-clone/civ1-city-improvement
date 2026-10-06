@@ -41,6 +41,7 @@ import {
   Writing,
 } from '@civ-clone/civ1-science/Advances';
 import { Build, IBuildCriterion } from '@civ-clone/core-city-build/Rules/Build';
+import { Mountains, River } from '@civ-clone/civ1-world/Terrains';
 import {
   CityImprovementRegistry,
   instance as cityImprovementRegistryInstance,
@@ -55,6 +56,7 @@ import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import { IConstructor } from '@civ-clone/core-registry/Registry';
+import Tile from '@civ-clone/core-world/Tile';
 
 export const getRules: (
   cityImprovementRegistry?: CityImprovementRegistry,
@@ -177,6 +179,26 @@ export const getRules: (
             )
         )
       )
+  ),
+  // As v474.05, which checks the eight squares around the city, but not the city's own square (OpenCivOne's decompile,
+  //  `Overlay_20.cs` `F20_0000_0000`). The book's "on or near" is looser.
+  new Build(
+    new Criterion(
+      (city: City, BuildItem: IConstructor): boolean => BuildItem === HydroPlant
+    ),
+    new Effect(
+      (city: City): IBuildCriterion =>
+        new Criterion((): boolean =>
+          city
+            .tile()
+            .getNeighbours()
+            .some(
+              (tile: Tile): boolean =>
+                tile.terrain() instanceof Mountains ||
+                tile.terrain() instanceof River
+            )
+        )
+    )
   ),
 ];
 
