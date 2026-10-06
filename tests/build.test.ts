@@ -50,6 +50,8 @@ import CityBuildRegistry from '@civ-clone/core-city-build/CityBuildRegistry';
 import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import CityImprovementRegistry from '@civ-clone/core-city-improvement/CityImprovementRegistry';
+import { Hills, Mountains, Ocean, River } from '@civ-clone/civ1-world/Terrains';
+import City from '@civ-clone/core-city/City';
 import CityRegistry from '@civ-clone/core-city/CityRegistry';
 import PlayerResearchRegistry from '@civ-clone/core-science/PlayerResearchRegistry';
 import PlayerWorldRegistry from '@civ-clone/core-player-world/PlayerWorldRegistry';
@@ -62,6 +64,10 @@ import created from '../Rules/City/created';
 import { expect } from 'chai';
 import improvementCreated from '../Rules/CityImprovement/created';
 import setUpCity from '@civ-clone/civ1-city/tests/lib/setUpCity';
+
+// `setUpCity` builds an all-Grassland world, where a Hydro Plant can't be built: give it a Mountains neighbour.
+const addMountainsNorthOf = (city: City): void =>
+  city.tile().getNeighbour('n').setTerrain(new Mountains());
 
 describe('city:build', (): void => {
   const ruleRegistry = new RuleRegistry(),
@@ -255,6 +261,8 @@ describe('city:build', (): void => {
         ),
         playerResearch = playerResearchRegistry.getByPlayer(city.player());
 
+      addMountainsNorthOf(city);
+
       expect(
         cityBuild.available().map((buildItem) => buildItem.item())
       ).to.not.include(CityImprovementType);
@@ -306,6 +314,8 @@ describe('city:build', (): void => {
             ),
             playerResearch = playerResearchRegistry.getByPlayer(city.player());
 
+          addMountainsNorthOf(city);
+
           cityImprovementRegistry.register(new PrerequisiteImprovement(city));
 
           expect(
@@ -327,4 +337,96 @@ describe('city:build', (): void => {
       );
     }
   );
+
+  (
+    [
+      ['Mountains', [['n', Mountains]], true],
+      ['a River', [['se', River]], true],
+      [
+        'Mountains and Ocean',
+        [
+          ['w', Ocean],
+          ['sw', Mountains],
+        ],
+        true,
+      ],
+      ['only Grassland', [], false],
+      [
+        'Hills and Ocean',
+        [
+          ['n', Hills],
+          ['e', Ocean],
+        ],
+        false,
+      ],
+    ] as [
+      string,
+      [string, typeof Hills | typeof Mountains | typeof Ocean | typeof River][],
+      boolean
+    ][]
+  ).forEach(([description, neighbours, buildable]): void =>
+    it(`should ${
+      buildable ? '' : 'not '
+    }be possible to build HydroPlant in a city next to ${description}`, async (): Promise<void> => {
+      const city = await setUpCity({
+          ruleRegistry,
+          playerWorldRegistry,
+          cityGrowthRegistry,
+        }),
+        cityBuild = new CityBuild(
+          city,
+          availableCityBuildItemsRegistry,
+          ruleRegistry
+        );
+
+      neighbours.forEach(([direction, TerrainType]) =>
+        city
+          .tile()
+          .getNeighbour(direction as 'n')
+          .setTerrain(new TerrainType())
+      );
+
+      cityImprovementRegistry.register(new Factory(city));
+      playerResearchRegistry.getByPlayer(city.player()).addAdvance(Electronics);
+
+      const available = cityBuild
+        .available()
+        .map((buildItem) => buildItem.item());
+
+      if (buildable) {
+        expect(available).to.include(HydroPlant);
+
+        return;
+      }
+
+      expect(available).to.not.include(HydroPlant);
+    })
+  );
+
+  it('should not be possible to build HydroPlant in a city on a River with no River or Mountains around it', async (): Promise<void> => {
+    const city = await setUpCity({
+        ruleRegistry,
+        playerWorldRegistry,
+        cityGrowthRegistry,
+      }),
+      cityBuild = new CityBuild(
+        city,
+        availableCityBuildItemsRegistry,
+        ruleRegistry
+      );
+
+    city.tile().setTerrain(new River());
+    cityImprovementRegistry.register(new Factory(city));
+    playerResearchRegistry.getByPlayer(city.player()).addAdvance(Electronics);
+
+    expect(
+      cityBuild.available().map((buildItem) => buildItem.item())
+    ).to.not.include(HydroPlant);
+
+    city.tile().getNeighbour('e').setTerrain(new River());
+
+    expect(
+      cityBuild.available().map((buildItem) => buildItem.item())
+    ).to.include(HydroPlant);
+  });
 });
