@@ -10,9 +10,10 @@ const destroyed_1 = require("./Rules/City/destroyed");
 const grow_1 = require("./Rules/City/grow");
 const created_2 = require("./Rules/CityImprovement/created");
 const yield_modifier_1 = require("./Rules/City/yield-modifier");
+const research_complete_1 = require("./Rules/Player/research-complete");
 const created_3 = require("./Rules/Unit/created");
 const core_game_1 = require("@civ-clone/core-game");
-const register = (game) => game.rules.register(...(0, build_1.default)(game.cityImprovements, game.playerResearch), ...(0, build_cost_1.default)(), ...(0, captured_1.default)(game.cityImprovements, game.rng), ...(0, cost_1.default)(game.cityImprovements, game.playerResearch), ...(0, created_1.default)(game.cities, game.cityImprovements, game.rules), ...(0, destroyed_1.default)(game.cityImprovements), ...(0, grow_1.default)(game.cityImprovements), ...(0, created_2.default)(game.cityImprovements, game.engine), ...(0, yield_modifier_1.default)(game.cityImprovements), ...(0, created_3.default)(game.cityImprovements, game.unitImprovements));
+const register = (game) => game.rules.register(...(0, build_1.default)(game.cityImprovements, game.playerResearch), ...(0, build_cost_1.default)(), ...(0, captured_1.default)(game.cityImprovements, game.rng), ...(0, cost_1.default)(game.cityImprovements, game.playerResearch), ...(0, created_1.default)(game.cities, game.cityImprovements, game.rules), ...(0, destroyed_1.default)(game.cityImprovements), ...(0, grow_1.default)(game.cityImprovements), ...(0, created_2.default)(game.cityImprovements, game.engine), ...(0, yield_modifier_1.default)(game.cityImprovements), ...(0, research_complete_1.default)(game.cityImprovements, game.cities, game.engine), ...(0, created_3.default)(game.cityImprovements, game.unitImprovements));
 exports.register = register;
 // The plugin loader imports each package for this side effect. Until it passes
 // a `Game` of its own, dropping it would produce a game with silently absent

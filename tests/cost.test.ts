@@ -21,7 +21,7 @@ import {
   Temple,
   University,
 } from '../CityImprovements';
-import { Automobile, Gunpowder } from '@civ-clone/civ1-science/Advances';
+import { Combustion, Gunpowder } from '@civ-clone/civ1-science/Advances';
 import { CityImprovementMaintenanceGold, Gold } from '../Yields';
 import Advance from '@civ-clone/core-science/Advance';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
@@ -133,7 +133,7 @@ describe('city:cost', (): void => {
     [
       [Barracks, 0, Gold],
       [Barracks, 1, Gold, Gunpowder],
-      [Barracks, 2, Gold, Gunpowder, Automobile],
+      [Barracks, 2, Gold, Gunpowder, Combustion],
     ] as [typeof CityImprovement, number, typeof Yield, ...(typeof Advance)[]][]
   ).forEach(
     ([CityImprovementType, expectedCost, YieldType, ...advances]): void => {
