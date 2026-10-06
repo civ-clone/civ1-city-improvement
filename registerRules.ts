@@ -7,6 +7,7 @@ import cityDestroyed from './Rules/City/destroyed';
 import cityGrow from './Rules/City/grow';
 import cityImprovementCreated from './Rules/CityImprovement/created';
 import cityYieldModifier from './Rules/City/yield-modifier';
+import playerResearchComplete from './Rules/Player/research-complete';
 import unitCreated from './Rules/Unit/created';
 import { Game, defaultGame } from '@civ-clone/core-game';
 
@@ -21,6 +22,7 @@ export const register = (game: Game): void =>
     ...cityGrow(game.cityImprovements),
     ...cityImprovementCreated(game.cityImprovements, game.engine),
     ...cityYieldModifier(game.cityImprovements),
+    ...playerResearchComplete(game.cityImprovements, game.cities, game.engine),
     ...unitCreated(game.cityImprovements, game.unitImprovements)
   );
 

@@ -41,8 +41,8 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
     }))),
     ...[
         [CityImprovements_1.Barracks, Yields_1.CityImprovementMaintenanceGold, 0, null, Advances_1.Gunpowder],
-        [CityImprovements_1.Barracks, Yields_1.CityImprovementMaintenanceGold, 1, Advances_1.Gunpowder, Advances_1.Automobile],
-        [CityImprovements_1.Barracks, Yields_1.CityImprovementMaintenanceGold, 2, Advances_1.Automobile, null],
+        [CityImprovements_1.Barracks, Yields_1.CityImprovementMaintenanceGold, 1, Advances_1.Gunpowder, Advances_1.Combustion],
+        [CityImprovements_1.Barracks, Yields_1.CityImprovementMaintenanceGold, 2, Advances_1.Combustion, null],
     ].map(([CityImprovementType, YieldType, cost, RequiredAdvance, ObsoletingAdvance,]) => new Cost_1.default(new Criterion_1.default((city) => cityImprovementRegistry
         .getByCity(city)
         .some((cityImprovement) => cityImprovement instanceof CityImprovementType)), new Criterion_1.default((city) => RequiredAdvance === null ||

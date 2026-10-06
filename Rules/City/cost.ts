@@ -21,7 +21,7 @@ import {
   Temple,
   University,
 } from '../../CityImprovements';
-import { Automobile, Gunpowder } from '@civ-clone/civ1-science/Advances';
+import { Combustion, Gunpowder } from '@civ-clone/civ1-science/Advances';
 import {
   CityImprovementRegistry,
   instance as cityImprovementRegistryInstance,
@@ -100,8 +100,8 @@ export const getRules: (
   ...(
     [
       [Barracks, CityImprovementMaintenanceGold, 0, null, Gunpowder],
-      [Barracks, CityImprovementMaintenanceGold, 1, Gunpowder, Automobile],
-      [Barracks, CityImprovementMaintenanceGold, 2, Automobile, null],
+      [Barracks, CityImprovementMaintenanceGold, 1, Gunpowder, Combustion],
+      [Barracks, CityImprovementMaintenanceGold, 2, Combustion, null],
     ] as [
       typeof CityImprovement,
       typeof CityImprovementMaintenanceGold,
