@@ -1,5 +1,6 @@
 import cityBuild from './Rules/City/build';
 import cityBuildCost from './Rules/City/build-cost';
+import cityBuildPriority from './Rules/City/build-priority';
 import cityCaptured from './Rules/City/captured';
 import cityCost from './Rules/City/cost';
 import cityCreated from './Rules/City/created';
@@ -16,6 +17,14 @@ export const register = (game: Game): void =>
     ...cityBuild(game.cityImprovements, game.playerResearch),
     ...cityBuildCost(),
     ...cityCaptured(game.cityImprovements, game.rng),
+    ...cityBuildPriority(
+      game.cityGrowth,
+      game.cityImprovements,
+      game.interactions,
+      game.playerResearch,
+      game.cities,
+      game.units
+    ),
     ...cityCost(game.cityImprovements, game.playerResearch),
     ...cityCreated(game.cities, game.cityImprovements, game.rules),
     ...cityDestroyed(game.cityImprovements),
