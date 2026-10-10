@@ -31,6 +31,7 @@ import {
   instance as playerResearchRegistryInstance,
 } from '@civ-clone/core-science/PlayerResearchRegistry';
 import Advance from '@civ-clone/core-science/Advance';
+import Player from '@civ-clone/core-player/Player';
 import City from '@civ-clone/core-city/City';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import { CityImprovementMaintenanceGold } from '../../Yields';
@@ -39,6 +40,63 @@ import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import Yield from '@civ-clone/core-yield/Yield';
 
+// The gold each improvement costs its city every turn.
+export const maintenance = [
+  [Aqueduct, CityImprovementMaintenanceGold, 2],
+  [Bank, CityImprovementMaintenanceGold, 3],
+  [Cathedral, CityImprovementMaintenanceGold, 3],
+  [CityWalls, CityImprovementMaintenanceGold, 2],
+  [Colosseum, CityImprovementMaintenanceGold, 2],
+  [Courthouse, CityImprovementMaintenanceGold, 1],
+  [Factory, CityImprovementMaintenanceGold, 4],
+  [Granary, CityImprovementMaintenanceGold, 1],
+  [HydroPlant, CityImprovementMaintenanceGold, 4],
+  [Library, CityImprovementMaintenanceGold, 1],
+  [ManufacturingPlant, CityImprovementMaintenanceGold, 6],
+  [Marketplace, CityImprovementMaintenanceGold, 1],
+  [MassTransit, CityImprovementMaintenanceGold, 4],
+  [NuclearPlant, CityImprovementMaintenanceGold, 2],
+  [Palace, CityImprovementMaintenanceGold, 0],
+  [PowerPlant, CityImprovementMaintenanceGold, 4],
+  [RecyclingCenter, CityImprovementMaintenanceGold, 2],
+  [SdiDefence, CityImprovementMaintenanceGold, 4],
+  [Temple, CityImprovementMaintenanceGold, 1],
+  [University, CityImprovementMaintenanceGold, 3],
+] as [typeof CityImprovement, typeof CityImprovementMaintenanceGold, number][];
+
+// Barracks cost more to keep as the advances that make them obsolete arrive: the cost, from and until which advance.
+export const barracksMaintenance = [
+  [Barracks, CityImprovementMaintenanceGold, 0, null, Gunpowder],
+  [Barracks, CityImprovementMaintenanceGold, 1, Gunpowder, Combustion],
+  [Barracks, CityImprovementMaintenanceGold, 2, Combustion, null],
+] as [
+  typeof CityImprovement,
+  typeof CityImprovementMaintenanceGold,
+  number,
+  typeof Advance | null,
+  typeof Advance | null
+][];
+
+// What `CityImprovementType` would cost `player` to keep each turn, as the rules below would charge it.
+export const upkeep = (
+  CityImprovementType: typeof CityImprovement,
+  player: Player,
+  playerResearchRegistry: PlayerResearchRegistry = playerResearchRegistryInstance
+): number => {
+  const research = playerResearchRegistry.getByPlayer(player),
+    [barracks] = barracksMaintenance.filter(
+      ([Type, , , RequiredAdvance, ObsoletingAdvance]): boolean =>
+        Type === CityImprovementType &&
+        (RequiredAdvance === null || research.completed(RequiredAdvance)) &&
+        (ObsoletingAdvance === null || !research.completed(ObsoletingAdvance))
+    ),
+    [entry] = maintenance.filter(
+      ([Type]): boolean => Type === CityImprovementType
+    );
+
+  return barracks?.[2] ?? entry?.[2] ?? 0;
+};
+
 export const getRules: (
   cityImprovementRegistry?: CityImprovementRegistry,
   playerResearchRegistry?: PlayerResearchRegistry
@@ -46,34 +104,7 @@ export const getRules: (
   cityImprovementRegistry: CityImprovementRegistry = cityImprovementRegistryInstance,
   playerResearchRegistry: PlayerResearchRegistry = playerResearchRegistryInstance
 ): Cost[] => [
-  ...(
-    [
-      [Aqueduct, CityImprovementMaintenanceGold, 2],
-      [Bank, CityImprovementMaintenanceGold, 3],
-      [Cathedral, CityImprovementMaintenanceGold, 3],
-      [CityWalls, CityImprovementMaintenanceGold, 2],
-      [Colosseum, CityImprovementMaintenanceGold, 2],
-      [Courthouse, CityImprovementMaintenanceGold, 1],
-      [Factory, CityImprovementMaintenanceGold, 4],
-      [Granary, CityImprovementMaintenanceGold, 1],
-      [HydroPlant, CityImprovementMaintenanceGold, 4],
-      [Library, CityImprovementMaintenanceGold, 1],
-      [ManufacturingPlant, CityImprovementMaintenanceGold, 6],
-      [Marketplace, CityImprovementMaintenanceGold, 1],
-      [MassTransit, CityImprovementMaintenanceGold, 4],
-      [NuclearPlant, CityImprovementMaintenanceGold, 2],
-      [Palace, CityImprovementMaintenanceGold, 0],
-      [PowerPlant, CityImprovementMaintenanceGold, 4],
-      [RecyclingCenter, CityImprovementMaintenanceGold, 2],
-      [SdiDefence, CityImprovementMaintenanceGold, 4],
-      [Temple, CityImprovementMaintenanceGold, 1],
-      [University, CityImprovementMaintenanceGold, 3],
-    ] as [
-      typeof CityImprovement,
-      typeof CityImprovementMaintenanceGold,
-      number
-    ][]
-  ).map(
+  ...maintenance.map(
     ([CityImprovementType, YieldType, cost]): Cost =>
       new Cost(
         new Criterion((city: City): boolean =>
@@ -97,19 +128,7 @@ export const getRules: (
       )
   ),
 
-  ...(
-    [
-      [Barracks, CityImprovementMaintenanceGold, 0, null, Gunpowder],
-      [Barracks, CityImprovementMaintenanceGold, 1, Gunpowder, Combustion],
-      [Barracks, CityImprovementMaintenanceGold, 2, Combustion, null],
-    ] as [
-      typeof CityImprovement,
-      typeof CityImprovementMaintenanceGold,
-      number,
-      typeof Advance | null,
-      typeof Advance | null
-    ][]
-  ).map(
+  ...barracksMaintenance.map(
     ([
       CityImprovementType,
       YieldType,
