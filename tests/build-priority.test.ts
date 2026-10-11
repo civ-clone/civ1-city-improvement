@@ -176,8 +176,9 @@ describe('city:build-priority', (): void => {
   it('should want a Courthouse for what a city loses to corruption', (): void => {
     const { score } = setUp();
 
-    expect(score(Courthouse, new Corruption(-4), new Gold(2))).greaterThan(
-      score(Courthouse, new Corruption(-1), new Gold(2))
+    // As `civ1-city` makes it: a positive amount, whose `value()` is negative.
+    expect(score(Courthouse, new Corruption(4), new Gold(2))).greaterThan(
+      score(Courthouse, new Corruption(1), new Gold(2))
     );
   });
 
