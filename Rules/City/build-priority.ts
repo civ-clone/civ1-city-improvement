@@ -215,7 +215,8 @@ export const getRules: (
 ): BuildPriority[] => {
   const cityNeeds = (city: City, yields: Yield[]): CityNeeds => ({
       city,
-      corruption: total(yields, Corruption),
+      // Corruption yields are negative: what the city loses.
+      corruption: -total(yields, Corruption),
       food: total(yields, Food),
       gold: total(yields, Gold),
       luxuries: total(yields, Luxuries),

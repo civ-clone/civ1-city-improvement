@@ -109,7 +109,8 @@ exports.isThreatened = isThreatened;
 const getRules = (cityGrowthRegistry = CityGrowthRegistry_1.instance, cityImprovementRegistry = CityImprovementRegistry_1.instance, interactionRegistry = InteractionRegistry_1.instance, playerResearchRegistry = PlayerResearchRegistry_1.instance, cityRegistry = CityRegistry_1.instance, unitRegistry = UnitRegistry_1.instance) => {
     const cityNeeds = (city, yields) => ({
         city,
-        corruption: total(yields, Yields_1.Corruption),
+        // Corruption yields are negative: what the city loses.
+        corruption: -total(yields, Yields_1.Corruption),
         food: total(yields, Yields_1.Food),
         gold: total(yields, Yields_1.Gold),
         luxuries: total(yields, Yields_1.Luxuries),
