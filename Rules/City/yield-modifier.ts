@@ -43,9 +43,6 @@ export const getRules: (
       [NuclearPlant, Production, 0.5],
       [ManufacturingPlant, Production, 0.5],
       [Courthouse, Corruption, 0.5],
-      // [RecyclingCenter, Pollution, -0.5],
-      // [HydroPlant, Pollution, -0.5],
-      // [MassTransit, Pollution, -0.5],
     ] as [typeof CityImprovement, typeof Yield, number][]
   ).map(
     ([Improvement, YieldType, multiplier]: [

@@ -6,6 +6,8 @@ import cityCost from './Rules/City/cost';
 import cityCreated from './Rules/City/created';
 import cityDestroyed from './Rules/City/destroyed';
 import cityGrow from './Rules/City/grow';
+import cityPollution from './Rules/City/pollution';
+import cityPollutionDivisor from './Rules/City/pollution-divisor';
 import cityImprovementCreated from './Rules/CityImprovement/created';
 import cityYieldModifier from './Rules/City/yield-modifier';
 import playerResearchComplete from './Rules/Player/research-complete';
@@ -29,6 +31,18 @@ export const register = (game: Game): void =>
     ...cityCreated(game.cities, game.cityImprovements, game.rules),
     ...cityDestroyed(game.cityImprovements),
     ...cityGrow(game.cityImprovements),
+    ...cityPollution(
+      game.cities,
+      game.cityImprovements,
+      game.cityGrowth,
+      game.playerResearch,
+      game.tileImprovements,
+      game.difficulty,
+      game.rules,
+      game.engine,
+      game.rng
+    ),
+    ...cityPollutionDivisor(game.cityImprovements),
     ...cityImprovementCreated(game.cityImprovements, game.engine),
     ...cityYieldModifier(game.cityImprovements),
     ...playerResearchComplete(game.cityImprovements, game.cities, game.engine),
