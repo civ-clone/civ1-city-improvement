@@ -7,10 +7,11 @@ const Build_1 = require("@civ-clone/core-city-build/Rules/Build");
 const Terrains_1 = require("@civ-clone/civ1-world/Terrains");
 const CityImprovementRegistry_1 = require("@civ-clone/core-city-improvement/CityImprovementRegistry");
 const PlayerResearchRegistry_1 = require("@civ-clone/core-science/PlayerResearchRegistry");
+const CityImprovement_1 = require("@civ-clone/core-city-improvement/CityImprovement");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, playerResearchRegistry = PlayerResearchRegistry_1.instance) => [
-    new Build_1.Build(new Effect_1.default((city, BuildItem) => new Criterion_1.default(() => !cityImprovementRegistry
+    new Build_1.Build(CityImprovement_1.default, new Effect_1.default((city, BuildItem) => new Criterion_1.default(() => !cityImprovementRegistry
         .getByCity(city)
         .some((improvement) => improvement instanceof BuildItem)))),
     ...[
@@ -34,7 +35,7 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
         [CityImprovements_1.RecyclingCenter, Advances_1.Recycling],
         [CityImprovements_1.SdiDefence, Advances_1.Superconductor],
         [CityImprovements_1.University, Advances_1.University],
-    ].map(([CityImprovementType, RequiredAdvance]) => new Build_1.Build(new Criterion_1.default((city, BuildItem) => BuildItem === CityImprovementType), new Effect_1.default((city) => new Criterion_1.default(() => playerResearchRegistry
+    ].map(([CityImprovementType, RequiredAdvance]) => new Build_1.Build(CityImprovementType, new Criterion_1.default((city, BuildItem) => BuildItem === CityImprovementType), new Effect_1.default((city) => new Criterion_1.default(() => playerResearchRegistry
         .getByPlayer(city.player())
         .completed(RequiredAdvance))))),
     ...[
@@ -44,7 +45,7 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
         [CityImprovements_1.NuclearPlant, CityImprovements_1.Factory],
         [CityImprovements_1.PowerPlant, CityImprovements_1.Factory],
         [CityImprovements_1.ManufacturingPlant, CityImprovements_1.HydroPlant, CityImprovements_1.NuclearPlant, CityImprovements_1.PowerPlant],
-    ].map(([Improvement, ...Requires]) => new Build_1.Build(new Criterion_1.default((city, BuildItem) => BuildItem === Improvement), new Effect_1.default((city) => new Criterion_1.default(() => cityImprovementRegistry
+    ].map(([Improvement, ...Requires]) => new Build_1.Build(Improvement, new Criterion_1.default((city, BuildItem) => BuildItem === Improvement), new Effect_1.default((city) => new Criterion_1.default(() => cityImprovementRegistry
         .getByCity(city)
         .some((improvement) => Requires.some((Required) => improvement instanceof Required)))))),
     ...[
@@ -52,12 +53,12 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
         [CityImprovements_1.HydroPlant, CityImprovements_1.NuclearPlant, CityImprovements_1.PowerPlant],
         [CityImprovements_1.NuclearPlant, CityImprovements_1.PowerPlant, CityImprovements_1.HydroPlant],
         [CityImprovements_1.PowerPlant, CityImprovements_1.HydroPlant, CityImprovements_1.NuclearPlant],
-    ].map(([Improvement, ...Prevents]) => new Build_1.Build(new Criterion_1.default((city, BuildItem) => BuildItem === Improvement), new Effect_1.default((city) => new Criterion_1.default(() => cityImprovementRegistry
+    ].map(([Improvement, ...Prevents]) => new Build_1.Build(Improvement, new Criterion_1.default((city, BuildItem) => BuildItem === Improvement), new Effect_1.default((city) => new Criterion_1.default(() => cityImprovementRegistry
         .getByCity(city)
         .every((improvement) => !Prevents.some((Prevent) => improvement instanceof Prevent)))))),
     // As v474.05, which checks the eight squares around the city, but not the city's own square (OpenCivOne's decompile,
     //  `Overlay_20.cs` `F20_0000_0000`). The book's "on or near" is looser.
-    new Build_1.Build(new Criterion_1.default((city, BuildItem) => BuildItem === CityImprovements_1.HydroPlant), new Effect_1.default((city) => new Criterion_1.default(() => city
+    new Build_1.Build(CityImprovements_1.HydroPlant, new Criterion_1.default((city, BuildItem) => BuildItem === CityImprovements_1.HydroPlant), new Effect_1.default((city) => new Criterion_1.default(() => city
         .tile()
         .getNeighbours()
         .some((tile) => tile.terrain() instanceof Terrains_1.Mountains ||

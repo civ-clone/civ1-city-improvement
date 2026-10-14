@@ -66,6 +66,7 @@ export const getRules: (
   playerResearchRegistry: PlayerResearchRegistry = playerResearchRegistryInstance
 ): Build[] => [
   new Build(
+    CityImprovement,
     new Effect(
       (city: City, BuildItem: IConstructor): IBuildCriterion =>
         new Criterion(
@@ -105,6 +106,7 @@ export const getRules: (
   ).map(
     ([CityImprovementType, RequiredAdvance]): Build =>
       new Build(
+        CityImprovementType,
         new Criterion(
           (city: City, BuildItem: IConstructor): boolean =>
             BuildItem === CityImprovementType
@@ -131,6 +133,7 @@ export const getRules: (
   ).map(
     ([Improvement, ...Requires]): Build =>
       new Build(
+        Improvement,
         new Criterion(
           (city: City, BuildItem: IConstructor): boolean =>
             BuildItem === Improvement
@@ -160,6 +163,7 @@ export const getRules: (
   ).map(
     ([Improvement, ...Prevents]) =>
       new Build(
+        Improvement,
         new Criterion(
           (city: City, BuildItem: IConstructor): boolean =>
             BuildItem === Improvement
@@ -183,6 +187,7 @@ export const getRules: (
   // As v474.05, which checks the eight squares around the city, but not the city's own square (OpenCivOne's decompile,
   //  `Overlay_20.cs` `F20_0000_0000`). The book's "on or near" is looser.
   new Build(
+    HydroPlant,
     new Criterion(
       (city: City, BuildItem: IConstructor): boolean => BuildItem === HydroPlant
     ),
