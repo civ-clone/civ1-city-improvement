@@ -26,7 +26,8 @@ export const getRules: (
           )
     ),
     new Criterion((cityGrowth: CityGrowth): boolean => cityGrowth.size() > 10),
-    new Effect((cityGrowth: CityGrowth): void => cityGrowth.shrink())
+    // The missing Aqueduct is what keeps it from growing (civ-clone/web-renderer#400).
+    new Effect((cityGrowth: CityGrowth): void => cityGrowth.shrink(Aqueduct))
   ),
   new Grow(
     new Criterion((cityGrowth: CityGrowth): boolean =>
