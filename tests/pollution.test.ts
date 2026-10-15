@@ -38,6 +38,7 @@ import pollution from '../Rules/City/pollution';
 import pollutionDivisor from '../Rules/City/pollution-divisor';
 import setUpCity from '@civ-clone/civ1-city/tests/lib/setUpCity';
 import smokestacks from '../lib/smokestacks';
+import smokestacksData from '../AdditionalData/smokestacks';
 
 // civ-clone/web-renderer#32: how much a city pollutes, and where.
 describe('pollution', (): void => {
@@ -127,6 +128,9 @@ describe('pollution', (): void => {
     return {
       build,
       city,
+      cityGrowthRegistry,
+      cityImprovementRegistry,
+      playerResearchRegistry,
       cityRegistry,
       events,
       playerResearch,
@@ -178,6 +182,41 @@ describe('pollution', (): void => {
       build(MassTransit);
 
       expect(points([new Production(20)])).to.equal(0);
+    });
+  });
+
+  describe('smokestacks data', (): void => {
+    // civ-clone/web-renderer#402: what the city screen draws.
+    it('sends the smokestack points over 20, and never fewer than none', async (): Promise<void> => {
+      const {
+          build,
+          city,
+          cityGrowthRegistry,
+          cityImprovementRegistry,
+          playerResearchRegistry,
+          ruleRegistry,
+        } = await setUp(1),
+        [additionalData] = smokestacksData(
+          ruleRegistry,
+          cityImprovementRegistry,
+          cityGrowthRegistry,
+          playerResearchRegistry
+        );
+      let cityYields: Yield[] = [new Production(30)];
+
+      city.yields = (): Yield[] => cityYields;
+
+      expect(additionalData.key()).to.equal('smokestacks');
+      expect(additionalData.data(city)).to.equal(10);
+
+      // 30 shields halved.
+      build(HydroPlant);
+
+      expect(additionalData.data(city)).to.equal(0);
+
+      cityYields = [new Production(12)];
+
+      expect(additionalData.data(city)).to.equal(0);
     });
   });
 
