@@ -37,8 +37,8 @@ import { expect } from 'chai';
 import pollution from '../Rules/City/pollution';
 import pollutionDivisor from '../Rules/City/pollution-divisor';
 import setUpCity from '@civ-clone/civ1-city/tests/lib/setUpCity';
-import smokestacks from '../lib/smokestacks';
-import smokestacksData from '../AdditionalData/smokestacks';
+import pollutionPoints from '../lib/pollution';
+import pollutionData from '../AdditionalData/pollution';
 
 // civ-clone/web-renderer#32: how much a city pollutes, and where.
 describe('pollution', (): void => {
@@ -97,7 +97,7 @@ describe('pollution', (): void => {
           cityImprovementRegistry.register(new Improvement(city, ruleRegistry))
         ),
       points = (cityYields: Yield[]): number =>
-        smokestacks(
+        pollutionPoints(
           city,
           cityYields,
           ruleRegistry,
@@ -142,7 +142,7 @@ describe('pollution', (): void => {
     };
   };
 
-  describe('smokestacks', (): void => {
+  describe('pollution points', (): void => {
     it('counts shields over 20, before unit support', async (): Promise<void> => {
       const { points } = await setUp(1);
 
@@ -185,9 +185,9 @@ describe('pollution', (): void => {
     });
   });
 
-  describe('smokestacks data', (): void => {
+  describe('pollution data', (): void => {
     // civ-clone/web-renderer#402: what the city screen draws.
-    it('sends the smokestack points over 20, and never fewer than none', async (): Promise<void> => {
+    it('sends the pollution over 20, and never less than none', async (): Promise<void> => {
       const {
           build,
           city,
@@ -196,7 +196,7 @@ describe('pollution', (): void => {
           playerResearchRegistry,
           ruleRegistry,
         } = await setUp(1),
-        [additionalData] = smokestacksData(
+        [additionalData] = pollutionData(
           ruleRegistry,
           cityImprovementRegistry,
           cityGrowthRegistry,
@@ -206,7 +206,7 @@ describe('pollution', (): void => {
 
       city.yields = (): Yield[] => cityYields;
 
-      expect(additionalData.key()).to.equal('smokestacks');
+      expect(additionalData.key()).to.equal('pollution');
       expect(additionalData.data(city)).to.equal(10);
 
       // 30 shields halved.

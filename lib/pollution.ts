@@ -39,12 +39,13 @@ export const pollutingAdvances = [
 ];
 
 /**
- * A city's "smokestack points", as v474.05 works them out each turn (`CityWorker.cs` ~L3710, civ-clone/web-renderer#32):
+ * A city's pollution: what v474.05 calls its "smokestack points", worked out each turn (`CityWorker.cs` ~L3710,
+ * civ-clone/web-renderer#32):
  * its shields (after the Factory and plant bonuses, before unit support) divided by its `PollutionDivisor`, plus its
  * size times the polluting advances its owner knows (none with Mass Transit) over 4, less 20. Only a value above 0
  * risks pollution.
  */
-export const smokestacks = (
+export const pollution = (
   city: City,
   cityYields: Yield[] = city.yields(),
   ruleRegistry: RuleRegistry = ruleRegistryInstance,
@@ -82,4 +83,4 @@ export const smokestacks = (
   );
 };
 
-export default smokestacks;
+export default pollution;

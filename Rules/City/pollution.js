@@ -16,8 +16,8 @@ const ProcessYield_1 = require("@civ-clone/core-city/Rules/ProcessYield");
 const Yields_1 = require("../../Yields");
 const core_random_1 = require("@civ-clone/core-random");
 const level_1 = require("@civ-clone/civ1-difficulty/level");
-const smokestacks_1 = require("../../lib/smokestacks");
-// Each turn a city with smokestack points (`lib/smokestacks`) may pollute one of the 20 squares around it, as v474.05
+const pollution_1 = require("../../lib/pollution");
+// Each turn a city with pollution (`lib/pollution`) may pollute one of the 20 squares around it, as v474.05
 //  does (`CityWorker.cs` ~L3710-3751, civ-clone/web-renderer#32): when `2 × points` beats a roll of
 //  `0 .. 255 − advances known × difficulty ÷ 2`, a random one of those squares is polluted, unless it's Ocean, a city or
 //  already polluted (no second roll). v474.05 only rolls for the human's cities; here every city does (Dom's decision on
@@ -26,7 +26,7 @@ const getRules = (cityRegistry = CityRegistry_1.instance, cityImprovementRegistr
     new ProcessYield_1.default('civ1-city-improvement:city/process-yield/pollution', 
     // Once a turn: the consolidated shields are processed once per city.
     new Criterion_1.default((cityYield) => cityYield instanceof Yields_1.Production), new Effect_1.default((cityYield, city, cityYields) => {
-        const points = (0, smokestacks_1.default)(city, cityYields, ruleRegistry, cityImprovementRegistry, cityGrowthRegistry, playerResearchRegistry);
+        const points = (0, pollution_1.default)(city, cityYields, ruleRegistry, cityImprovementRegistry, cityGrowthRegistry, playerResearchRegistry);
         if (points <= 0) {
             return;
         }
