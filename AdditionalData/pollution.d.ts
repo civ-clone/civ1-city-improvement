@@ -4,9 +4,8 @@ import { PlayerResearchRegistry } from '@civ-clone/core-science/PlayerResearchRe
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import AdditionalData from '@civ-clone/core-data-object/AdditionalData';
 /**
- * How many smokestacks the city screen shows: the city's smokestack points over 20 (`lib/smokestacks`), each a 1%
- * chance a turn of polluting a square around it, so a renderer can draw them without knowing the rule
- * (civ-clone/web-renderer#402).
+ * How much the city pollutes: its pollution over what it tolerates (`lib/pollution`), never below 0, so a renderer can
+ * show it without knowing the rule (civ-clone/web-renderer#402). Civ1 draws it as that many smokestacks.
  */
 export declare const getAdditionalData: (
   ruleRegistry?: RuleRegistry,

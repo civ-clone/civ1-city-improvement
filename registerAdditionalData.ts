@@ -1,9 +1,9 @@
 import { Game, defaultGame } from '@civ-clone/core-game';
-import smokestacks from './AdditionalData/smokestacks';
+import pollution from './AdditionalData/pollution';
 
 export const register = (game: Game): void =>
   game.additionalData.register(
-    ...smokestacks(
+    ...pollution(
       game.rules,
       game.cityImprovements,
       game.cityGrowth,

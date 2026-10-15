@@ -41,9 +41,9 @@ import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import Yield from '@civ-clone/core-yield/Yield';
 import { instance as rngInstance } from '@civ-clone/core-random';
 import { levelOf } from '@civ-clone/civ1-difficulty/level';
-import smokestacks from '../../lib/smokestacks';
+import pollution from '../../lib/pollution';
 
-// Each turn a city with smokestack points (`lib/smokestacks`) may pollute one of the 20 squares around it, as v474.05
+// Each turn a city with pollution (`lib/pollution`) may pollute one of the 20 squares around it, as v474.05
 //  does (`CityWorker.cs` ~L3710-3751, civ-clone/web-renderer#32): when `2 × points` beats a roll of
 //  `0 .. 255 − advances known × difficulty ÷ 2`, a random one of those squares is polluted, unless it's Ocean, a city or
 //  already polluted (no second roll). v474.05 only rolls for the human's cities; here every city does (Dom's decision on
@@ -76,7 +76,7 @@ export const getRules: (
       (cityYield: Yield): boolean => cityYield instanceof Production
     ),
     new Effect((cityYield: Yield, city: City, cityYields: Yield[]): void => {
-      const points = smokestacks(
+      const points = pollution(
         city,
         cityYields,
         ruleRegistry,
