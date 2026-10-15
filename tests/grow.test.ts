@@ -4,6 +4,9 @@ import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import CityImprovementRegistry from '@civ-clone/core-city-improvement/CityImprovementRegistry';
 import RuleRegistry from '@civ-clone/core-rule/RuleRegistry';
 import { expect } from 'chai';
+import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
+import Effect from '@civ-clone/core-rule/Effect';
+import Shrink from '@civ-clone/core-city-growth/Rules/Shrink';
 import cityGrow from '@civ-clone/civ1-city/Rules/City/grow';
 import grow from '../Rules/City/grow';
 import created from '@civ-clone/civ1-city/Rules/City/created';
@@ -72,5 +75,32 @@ describe('city:grow', (): void => {
       expect(cityGrowth.cost().value()).to.equal(expectedCost);
       expect(cityGrowth.progress().value()).to.equal(expectedFoodStorage);
     });
+  });
+
+  it('should shrink a city back to 10 without an Aqueduct, with the Aqueduct as its cause', async (): Promise<void> => {
+    const causes: unknown[] = [],
+      city = await setUpCity({
+        size: 10,
+        ruleRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+      }),
+      cityGrowth = cityGrowthRegistry.getByCity(city);
+
+    ruleRegistry.register(
+      new Shrink(
+        new Effect((shrunk: CityGrowth, cause: unknown): void => {
+          if (shrunk === cityGrowth) {
+            causes.push(cause);
+          }
+        })
+      )
+    );
+
+    cityGrowth.grow();
+
+    expect(cityGrowth.size()).to.equal(10);
+    expect(causes).to.deep.equal([Aqueduct]);
   });
 });

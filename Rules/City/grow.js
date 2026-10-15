@@ -10,7 +10,9 @@ const Grow_1 = require("@civ-clone/core-city-growth/Rules/Grow");
 const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance) => [
     new Grow_1.default(new Criterion_1.default((cityGrowth) => !cityImprovementRegistry
         .getByCity(cityGrowth.city())
-        .some((improvement) => improvement instanceof CityImprovements_1.Aqueduct)), new Criterion_1.default((cityGrowth) => cityGrowth.size() > 10), new Effect_1.default((cityGrowth) => cityGrowth.shrink())),
+        .some((improvement) => improvement instanceof CityImprovements_1.Aqueduct)), new Criterion_1.default((cityGrowth) => cityGrowth.size() > 10), 
+    // The missing Aqueduct is what keeps it from growing (civ-clone/web-renderer#400).
+    new Effect_1.default((cityGrowth) => cityGrowth.shrink(CityImprovements_1.Aqueduct))),
     new Grow_1.default(new Criterion_1.default((cityGrowth) => cityImprovementRegistry
         .getByCity(cityGrowth.city())
         .some((improvement) => improvement instanceof CityImprovements_1.Granary)), new Effect_1.default((cityGrowth) => cityGrowth.add(new Yields_1.FoodStorage(cityGrowth.cost().value() / 2)))),
