@@ -144,7 +144,7 @@ const everydayImprovements: (typeof CityImprovement)[] = [
 
 export const everyday = 0.1;
 
-// Improvements that multiply what a Factory adds, so only needed where there is one.
+// Improvements that add to what a Factory adds, so only needed where there is one (or a Mfg. Plant, for a plant).
 const withFactory: [typeof CityImprovement, number][] = [
   [ManufacturingPlant, 0.2],
   [HydroPlant, 0.15],
@@ -235,7 +235,11 @@ export const getRules: (
     hasFactory = (city: City): boolean =>
       cityImprovementRegistry
         .getByCity(city)
-        .some((improvement: CityImprovement) => improvement instanceof Factory),
+        .some(
+          (improvement: CityImprovement) =>
+            improvement instanceof Factory ||
+            improvement instanceof ManufacturingPlant
+        ),
     isItem =
       (Item: typeof CityImprovement) =>
       (cityBuild: CityBuild, BuildItem: Buildable): boolean =>

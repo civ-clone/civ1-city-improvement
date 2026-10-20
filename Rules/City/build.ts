@@ -125,10 +125,9 @@ export const getRules: (
     [
       [Bank, Marketplace],
       [University, Library],
-      [HydroPlant, Factory],
-      [NuclearPlant, Factory],
+      // As v474.05's production menu, which asks for a Factory before a Power Plant, but not before a Hydro or Nuclear
+      //  Plant, and nothing before a Mfg. Plant (OpenCivOne's decompile, `Segment_1ade.cs` `F0_1ade_0421`).
       [PowerPlant, Factory],
-      [ManufacturingPlant, HydroPlant, NuclearPlant, PowerPlant],
     ] as [typeof CityImprovement, ...(typeof CityImprovement)[]][]
   ).map(
     ([Improvement, ...Requires]): Build =>
@@ -156,6 +155,7 @@ export const getRules: (
   ...(
     [
       [Courthouse, Palace],
+      [Factory, ManufacturingPlant],
       [HydroPlant, NuclearPlant, PowerPlant],
       [NuclearPlant, PowerPlant, HydroPlant],
       [PowerPlant, HydroPlant, NuclearPlant],

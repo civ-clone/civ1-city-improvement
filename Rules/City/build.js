@@ -41,15 +41,15 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
     ...[
         [CityImprovements_1.Bank, CityImprovements_1.Marketplace],
         [CityImprovements_1.University, CityImprovements_1.Library],
-        [CityImprovements_1.HydroPlant, CityImprovements_1.Factory],
-        [CityImprovements_1.NuclearPlant, CityImprovements_1.Factory],
+        // As v474.05's production menu, which asks for a Factory before a Power Plant, but not before a Hydro or Nuclear
+        //  Plant, and nothing before a Mfg. Plant (OpenCivOne's decompile, `Segment_1ade.cs` `F0_1ade_0421`).
         [CityImprovements_1.PowerPlant, CityImprovements_1.Factory],
-        [CityImprovements_1.ManufacturingPlant, CityImprovements_1.HydroPlant, CityImprovements_1.NuclearPlant, CityImprovements_1.PowerPlant],
     ].map(([Improvement, ...Requires]) => new Build_1.Build(Improvement, new Criterion_1.default((city, BuildItem) => BuildItem === Improvement), new Effect_1.default((city) => new Criterion_1.default(() => cityImprovementRegistry
         .getByCity(city)
         .some((improvement) => Requires.some((Required) => improvement instanceof Required)))))),
     ...[
         [CityImprovements_1.Courthouse, CityImprovements_1.Palace],
+        [CityImprovements_1.Factory, CityImprovements_1.ManufacturingPlant],
         [CityImprovements_1.HydroPlant, CityImprovements_1.NuclearPlant, CityImprovements_1.PowerPlant],
         [CityImprovements_1.NuclearPlant, CityImprovements_1.PowerPlant, CityImprovements_1.HydroPlant],
         [CityImprovements_1.PowerPlant, CityImprovements_1.HydroPlant, CityImprovements_1.NuclearPlant],

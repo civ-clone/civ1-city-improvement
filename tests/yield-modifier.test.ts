@@ -68,10 +68,10 @@ describe('city:yield', (): void => {
       [Library, Research, 0.5],
       [University, Research, 0.5],
       [Factory, Production, 0.5],
-      [PowerPlant, Production, 0.5],
-      [HydroPlant, Production, 0.5],
-      [NuclearPlant, Production, 0.5],
-      [ManufacturingPlant, Production, 0.5],
+      [PowerPlant, Production, 0],
+      [HydroPlant, Production, 0],
+      [NuclearPlant, Production, 0],
+      [ManufacturingPlant, Production, 1],
     ] as [typeof CityImprovement, typeof Yield, number][]
   ).forEach(([Improvement, YieldType, difference]) =>
     it(`should provide ${difference * 100}% ${
@@ -98,6 +98,50 @@ describe('city:yield', (): void => {
         .reduce((total, cityYield) => total + cityYield.value(), 0);
 
       expect(yieldValue).to.equal(4 + 4 * difference);
+    })
+  );
+
+  // Expected values from v474.05 (OpenCivOne's decompile, `CityWorker.cs`), each improvement adding its share of the
+  //  base, with integer division.
+  (
+    [
+      [Research, 10, [Library], 15],
+      [Research, 10, [Library, University], 20],
+      [Research, 7, [Library, University], 13],
+      [Production, 10, [Factory], 15],
+      [Production, 10, [ManufacturingPlant], 20],
+      [Production, 10, [Factory, ManufacturingPlant], 20],
+      [Production, 10, [Factory, PowerPlant], 20],
+      [Production, 10, [ManufacturingPlant, HydroPlant], 25],
+      [Production, 10, [Factory, ManufacturingPlant, NuclearPlant], 25],
+      [Production, 7, [Factory, PowerPlant], 13],
+      [Production, 10, [PowerPlant], 10],
+      [Gold, 10, [Marketplace, Bank], 22],
+      [Luxuries, 7, [Marketplace, Bank], 15],
+    ] as [typeof Yield, number, (typeof CityImprovement)[], number][]
+  ).forEach(([YieldType, base, Improvements, expected]) =>
+    it(`should yield ${expected} ${
+      YieldType.name
+    } from ${base} in a city with ${Improvements.map(
+      (Improvement) => Improvement.name
+    ).join(', ')}`, async (): Promise<void> => {
+      const ruleRegistry = new RuleRegistry(),
+        cityImprovementRegistry = new CityImprovementRegistry(),
+        city = await setUpCity({
+          ruleRegistry,
+          playerWorldRegistry,
+        });
+
+      ruleRegistry.register(
+        ...cityYieldModifier(cityImprovementRegistry),
+        new YieldRule(new Effect(() => new YieldType(base)))
+      );
+
+      Improvements.forEach((Improvement) =>
+        cityImprovementRegistry.register(new Improvement(city))
+      );
+
+      expect(reduceYield(city.yields(), YieldType)).to.equal(expected);
     })
   );
 
