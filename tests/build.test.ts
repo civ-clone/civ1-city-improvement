@@ -193,9 +193,12 @@ describe('city:build', (): void => {
       [Colosseum, Construction],
       [Factory, Industrialization],
       [Granary, Pottery],
+      [HydroPlant, Electronics],
       [Library, Writing],
+      [ManufacturingPlant, Robotics],
       [Marketplace, Currency],
       [MassTransit, MassProduction],
+      [NuclearPlant, NuclearPower],
       [RecyclingCenter, Recycling],
       [SdiDefence, Superconductor],
       [Temple, CeremonialBurial],
@@ -214,6 +217,8 @@ describe('city:build', (): void => {
         ),
         playerResearch = playerResearchRegistry.getByPlayer(city.player());
 
+      addMountainsNorthOf(city);
+
       expect(
         cityBuild.available().map((buildItem) => buildItem.item())
       ).to.not.include(CityImprovementType);
@@ -229,11 +234,6 @@ describe('city:build', (): void => {
   (
     [
       [Bank, Marketplace, Banking],
-      [HydroPlant, Factory, Electronics],
-      [ManufacturingPlant, HydroPlant, Robotics],
-      [ManufacturingPlant, NuclearPlant, Robotics],
-      [ManufacturingPlant, PowerPlant, Robotics],
-      [NuclearPlant, Factory, NuclearPower],
       [PowerPlant, Factory, Refining],
       [University, Library, UniversityAdvance],
     ] as [
@@ -402,6 +402,33 @@ describe('city:build', (): void => {
       expect(available).to.not.include(HydroPlant);
     })
   );
+
+  it('should not be possible to build Factory in a city that has a ManufacturingPlant', async (): Promise<void> => {
+    const city = await setUpCity({
+        ruleRegistry,
+        playerWorldRegistry,
+        cityGrowthRegistry,
+      }),
+      cityBuild = new CityBuild(
+        city,
+        availableCityBuildItemsRegistry,
+        ruleRegistry
+      );
+
+    playerResearchRegistry
+      .getByPlayer(city.player())
+      .addAdvance(Industrialization);
+
+    expect(
+      cityBuild.available().map((buildItem) => buildItem.item())
+    ).to.include(Factory);
+
+    cityImprovementRegistry.register(new ManufacturingPlant(city));
+
+    expect(
+      cityBuild.available().map((buildItem) => buildItem.item())
+    ).to.not.include(Factory);
+  });
 
   it('should not be possible to build HydroPlant in a city on a River with no River or Mountains around it', async (): Promise<void> => {
     const city = await setUpCity({

@@ -69,7 +69,7 @@ const everydayImprovements = [
     CityImprovements_1.University,
 ];
 exports.everyday = 0.1;
-// Improvements that multiply what a Factory adds, so only needed where there is one.
+// Improvements that add to what a Factory adds, so only needed where there is one (or a Mfg. Plant, for a plant).
 const withFactory = [
     [CityImprovements_1.ManufacturingPlant, 0.2],
     [CityImprovements_1.HydroPlant, 0.15],
@@ -126,7 +126,8 @@ const getRules = (cityGrowthRegistry = CityGrowthRegistry_1.instance, cityImprov
             Math.max(0, gold) +
             (0, cost_1.upkeep)(Item, city.player(), playerResearchRegistry)), hasFactory = (city) => cityImprovementRegistry
         .getByCity(city)
-        .some((improvement) => improvement instanceof CityImprovements_1.Factory), isItem = (Item) => (cityBuild, BuildItem) => BuildItem === Item;
+        .some((improvement) => improvement instanceof CityImprovements_1.Factory ||
+        improvement instanceof CityImprovements_1.ManufacturingPlant), isItem = (Item) => (cityBuild, BuildItem) => BuildItem === Item;
     return [
         ...exports.needs.map(([Item, need]) => new BuildPriority_1.default(`civ1-city-improvement:city/build-priority/${Item.name}`, new Criterion_1.default(isItem(Item)), new Effect_1.default((cityBuild, BuildItem, yields) => {
             const needs = cityNeeds(cityBuild.city(), yields);
