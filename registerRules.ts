@@ -1,4 +1,9 @@
-import cityBuild from './Rules/City/build';
+import { buildRequirements, describedRequirements } from './Requirements';
+import {
+  deriveBuildRules,
+  hydroPlantSiteRule,
+  notBuiltRule,
+} from './Rules/City/build';
 import cityBuildCost from './Rules/City/build-cost';
 import cityBuildPriority from './Rules/City/build-priority';
 import cityCaptured from './Rules/City/captured';
@@ -14,9 +19,20 @@ import playerResearchComplete from './Rules/Player/research-complete';
 import unitCreated from './Rules/Unit/created';
 import { Game, defaultGame } from '@civ-clone/core-game';
 
-export const register = (game: Game): void =>
+export const register = (game: Game): void => {
+  game.rules.register(notBuiltRule(game.cityImprovements));
+
+  // Which improvements a city may build, from the entries in `Requirements`: their rules land where the build rules
+  //  always were, between the rules above and below, so nothing else moves in the order rules run
+  //  (civ-clone/web-renderer#37).
+  game.requirements.add(
+    deriveBuildRules(game.cityImprovements, game.playerResearch),
+    ...buildRequirements
+  );
+  game.requirements.add(null, ...describedRequirements);
+
   game.rules.register(
-    ...cityBuild(game.cityImprovements, game.playerResearch),
+    hydroPlantSiteRule(),
     ...cityBuildCost(),
     ...cityCaptured(game.cityImprovements, game.rng),
     ...cityBuildPriority(
@@ -48,6 +64,7 @@ export const register = (game: Game): void =>
     ...playerResearchComplete(game.cityImprovements, game.cities, game.engine),
     ...unitCreated(game.cityImprovements, game.unitImprovements)
   );
+};
 
 // The plugin loader imports each package for this side effect. Until it passes
 // a `Game` of its own, dropping it would produce a game with silently absent

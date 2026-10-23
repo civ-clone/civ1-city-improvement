@@ -1,68 +1,79 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRules = void 0;
-const CityImprovements_1 = require("../../CityImprovements");
-const Advances_1 = require("@civ-clone/civ1-science/Advances");
+exports.getRules = exports.deriveBuildRules = exports.buildRulesFor = exports.hydroPlantSiteRule = exports.notBuiltRule = void 0;
 const Build_1 = require("@civ-clone/core-city-build/Rules/Build");
-const Terrains_1 = require("@civ-clone/civ1-world/Terrains");
 const CityImprovementRegistry_1 = require("@civ-clone/core-city-improvement/CityImprovementRegistry");
 const PlayerResearchRegistry_1 = require("@civ-clone/core-science/PlayerResearchRegistry");
+const Requirement_1 = require("@civ-clone/core-requirement/Requirement");
+const Terrains_1 = require("@civ-clone/civ1-world/Terrains");
 const CityImprovement_1 = require("@civ-clone/core-city-improvement/CityImprovement");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
+const CityImprovements_1 = require("../../CityImprovements");
+const Requirements_1 = require("../../Requirements");
+/** An improvement is built once in each city: a state of the city, so a rule written by hand. */
+const notBuiltRule = (cityImprovementRegistry = CityImprovementRegistry_1.instance) => new Build_1.Build('civ1-city-improvement:city/build/not-built', CityImprovement_1.default, new Effect_1.default((city, BuildItem) => new Criterion_1.default(() => !cityImprovementRegistry
+    .getByCity(city)
+    .some((improvement) => improvement instanceof BuildItem))));
+exports.notBuiltRule = notBuiltRule;
+/**
+ * A Hydro Plant is only built with Mountains or a River next to the city: a state of the map, so a rule written by
+ * hand.
+ */
+const hydroPlantSiteRule = () => 
+// As v474.05, which checks the eight squares around the city, but not the city's own square (OpenCivOne's
+//  decompile, `Overlay_20.cs` `F20_0000_0000`). The book's "on or near" is looser.
+new Build_1.Build('civ1-city-improvement:city/build/hydro-plant-site', CityImprovements_1.HydroPlant, new Criterion_1.default((city, BuildItem) => BuildItem === CityImprovements_1.HydroPlant), new Effect_1.default((city) => new Criterion_1.default(() => city
+    .tile()
+    .getNeighbours()
+    .some((tile) => tile.terrain() instanceof Terrains_1.Mountains ||
+    tile.terrain() instanceof Terrains_1.River))));
+exports.hydroPlantSiteRule = hydroPlantSiteRule;
+const isImprovement = (target) => Object.prototype.isPrototypeOf.call(CityImprovement_1.default, target);
+/**
+ * The rule `entry` is played by: a city may build its subject only while its targets are met (`requires`), or only
+ * while they are not (`excludedBy`). A target that is an improvement is met by the city having one; any other is an
+ * advance, met by the city's player having discovered it.
+ */
+const buildRulesFor = (entry, cityImprovementRegistry = CityImprovementRegistry_1.instance, playerResearchRegistry = PlayerResearchRegistry_1.instance) => {
+    if (entry.relation !== 'requires' && entry.relation !== 'excludedBy') {
+        return [];
+    }
+    const excluded = entry.relation === 'excludedBy', 
+    // Worked out once here rather than each time the rule runs, as `available()` runs it for every item every turn.
+    improvementTargets = new Set(entry.targets.filter(isImprovement));
+    return [
+        new Build_1.Build(entry.id, entry.subject, new Criterion_1.default((city, BuildItem) => BuildItem === entry.subject), new Effect_1.default((city) => new Criterion_1.default(() => {
+            let improvements = null;
+            const targetsMet = (0, Requirement_1.met)(entry, (target) => {
+                if (!improvementTargets.has(target)) {
+                    return playerResearchRegistry
+                        .getByPlayer(city.player())
+                        .completed(target);
+                }
+                if (improvements === null) {
+                    improvements = cityImprovementRegistry.getByCity(city);
+                }
+                return improvements.some((improvement) => improvement instanceof target);
+            });
+            return excluded ? !targetsMet : targetsMet;
+        }))),
+    ];
+};
+exports.buildRulesFor = buildRulesFor;
+/** What `registerRules` gives the game's `requirements` to make each entry's rules with. */
+const deriveBuildRules = (cityImprovementRegistry, playerResearchRegistry) => (entry) => (0, exports.buildRulesFor)(entry, cityImprovementRegistry, playerResearchRegistry);
+exports.deriveBuildRules = deriveBuildRules;
+/**
+ * Every rule about which improvements a city may build, as `registerRules` registers them: the not-built rule, one for
+ * each of `Requirements`' entries, then the Hydro Plant's site rule. For a rule registry without a game's
+ * `requirements` (tests, and rulesets that build on these): a game's are registered through `game.requirements`, so a
+ * plugin can change an entry and its rule together.
+ */
 const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, playerResearchRegistry = PlayerResearchRegistry_1.instance) => [
-    new Build_1.Build(CityImprovement_1.default, new Effect_1.default((city, BuildItem) => new Criterion_1.default(() => !cityImprovementRegistry
-        .getByCity(city)
-        .some((improvement) => improvement instanceof BuildItem)))),
-    ...[
-        [CityImprovements_1.Aqueduct, Advances_1.Construction],
-        [CityImprovements_1.CityWalls, Advances_1.Masonry],
-        [CityImprovements_1.Colosseum, Advances_1.Construction],
-        [CityImprovements_1.Courthouse, Advances_1.CodeOfLaws],
-        [CityImprovements_1.Granary, Advances_1.Pottery],
-        [CityImprovements_1.Library, Advances_1.Writing],
-        [CityImprovements_1.Marketplace, Advances_1.Currency],
-        [CityImprovements_1.Palace, Advances_1.Masonry],
-        [CityImprovements_1.Temple, Advances_1.CeremonialBurial],
-        [CityImprovements_1.Bank, Advances_1.Banking],
-        [CityImprovements_1.Cathedral, Advances_1.Religion],
-        [CityImprovements_1.Factory, Advances_1.Industrialization],
-        [CityImprovements_1.HydroPlant, Advances_1.Electronics],
-        [CityImprovements_1.MassTransit, Advances_1.MassProduction],
-        [CityImprovements_1.ManufacturingPlant, Advances_1.Robotics],
-        [CityImprovements_1.NuclearPlant, Advances_1.NuclearPower],
-        [CityImprovements_1.PowerPlant, Advances_1.Refining],
-        [CityImprovements_1.RecyclingCenter, Advances_1.Recycling],
-        [CityImprovements_1.SdiDefence, Advances_1.Superconductor],
-        [CityImprovements_1.University, Advances_1.University],
-    ].map(([CityImprovementType, RequiredAdvance]) => new Build_1.Build(CityImprovementType, new Criterion_1.default((city, BuildItem) => BuildItem === CityImprovementType), new Effect_1.default((city) => new Criterion_1.default(() => playerResearchRegistry
-        .getByPlayer(city.player())
-        .completed(RequiredAdvance))))),
-    ...[
-        [CityImprovements_1.Bank, CityImprovements_1.Marketplace],
-        [CityImprovements_1.University, CityImprovements_1.Library],
-        // As v474.05's production menu, which asks for a Factory before a Power Plant, but not before a Hydro or Nuclear
-        //  Plant, and nothing before a Mfg. Plant (OpenCivOne's decompile, `Segment_1ade.cs` `F0_1ade_0421`).
-        [CityImprovements_1.PowerPlant, CityImprovements_1.Factory],
-    ].map(([Improvement, ...Requires]) => new Build_1.Build(Improvement, new Criterion_1.default((city, BuildItem) => BuildItem === Improvement), new Effect_1.default((city) => new Criterion_1.default(() => cityImprovementRegistry
-        .getByCity(city)
-        .some((improvement) => Requires.some((Required) => improvement instanceof Required)))))),
-    ...[
-        [CityImprovements_1.Courthouse, CityImprovements_1.Palace],
-        [CityImprovements_1.Factory, CityImprovements_1.ManufacturingPlant],
-        [CityImprovements_1.HydroPlant, CityImprovements_1.NuclearPlant, CityImprovements_1.PowerPlant],
-        [CityImprovements_1.NuclearPlant, CityImprovements_1.PowerPlant, CityImprovements_1.HydroPlant],
-        [CityImprovements_1.PowerPlant, CityImprovements_1.HydroPlant, CityImprovements_1.NuclearPlant],
-    ].map(([Improvement, ...Prevents]) => new Build_1.Build(Improvement, new Criterion_1.default((city, BuildItem) => BuildItem === Improvement), new Effect_1.default((city) => new Criterion_1.default(() => cityImprovementRegistry
-        .getByCity(city)
-        .every((improvement) => !Prevents.some((Prevent) => improvement instanceof Prevent)))))),
-    // As v474.05, which checks the eight squares around the city, but not the city's own square (OpenCivOne's decompile,
-    //  `Overlay_20.cs` `F20_0000_0000`). The book's "on or near" is looser.
-    new Build_1.Build(CityImprovements_1.HydroPlant, new Criterion_1.default((city, BuildItem) => BuildItem === CityImprovements_1.HydroPlant), new Effect_1.default((city) => new Criterion_1.default(() => city
-        .tile()
-        .getNeighbours()
-        .some((tile) => tile.terrain() instanceof Terrains_1.Mountains ||
-        tile.terrain() instanceof Terrains_1.River)))),
+    (0, exports.notBuiltRule)(cityImprovementRegistry),
+    ...Requirements_1.default.flatMap((entry) => (0, exports.buildRulesFor)(entry, cityImprovementRegistry, playerResearchRegistry)),
+    (0, exports.hydroPlantSiteRule)(),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;
