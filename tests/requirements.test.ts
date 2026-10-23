@@ -14,6 +14,7 @@ import {
 import {
   Banking,
   CeremonialBurial,
+  CodeOfLaws,
   Industrialization,
   Refining,
 } from '@civ-clone/civ1-science/Advances';
@@ -213,6 +214,11 @@ describe('civ1-city-improvement requirements', (): void => {
     add(NuclearPlant);
 
     expect(canBuild(PowerPlant)).false;
+
+    // With Code of Laws a Courthouse is buildable, until the city has a Palace.
+    research.addAdvance(CodeOfLaws);
+
+    expect(canBuild(Courthouse)).true;
 
     add(Palace);
 
