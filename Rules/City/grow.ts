@@ -17,7 +17,7 @@ export const getRules: (
   cityImprovementRegistry: CityImprovementRegistry = cityImprovementRegistryInstance
 ): Grow[] => [
   new Grow(
-    // Past the limit, as it has just grown: shrinking back keeps it at `aqueductSizeLimit`.
+    // Past the limit, as it has just grown: shrinking back undoes the growth.
     new Criterion(
       (cityGrowth: CityGrowth): boolean =>
         cityGrowth.size() > aqueductSizeLimit &&

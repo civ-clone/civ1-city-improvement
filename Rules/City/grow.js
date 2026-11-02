@@ -10,7 +10,7 @@ const Grow_1 = require("@civ-clone/core-city-growth/Rules/Grow");
 const growthLimit_1 = require("../../lib/growthLimit");
 const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance) => [
     new Grow_1.default(
-    // Past the limit, as it has just grown: shrinking back keeps it at `aqueductSizeLimit`.
+    // Past the limit, as it has just grown: shrinking back undoes the growth.
     new Criterion_1.default((cityGrowth) => cityGrowth.size() > growthLimit_1.aqueductSizeLimit &&
         (0, growthLimit_1.default)(cityGrowth, cityImprovementRegistry) !== null), 
     // The missing Aqueduct is what keeps it from growing (civ-clone/web-renderer#400).

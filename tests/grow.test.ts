@@ -141,4 +141,35 @@ describe('city:grow', (): void => {
 
     expect(cityGrowth.size()).to.equal(11);
   });
+
+  it('sends the Aqueduct again for a city past 10 that loses its Aqueduct', async (): Promise<void> => {
+    const [additionalData] = growthLimitData(cityImprovementRegistry),
+      city = await setUpCity({
+        size: 10,
+        ruleRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+      }),
+      cityGrowth = cityGrowthRegistry.getByCity(city),
+      aqueduct = new Aqueduct(city, ruleRegistry);
+
+    cityGrowth.grow();
+    cityGrowth.grow();
+
+    expect(cityGrowth.size()).to.equal(12);
+    expect(additionalData.data(cityGrowth)).to.equal(null);
+
+    cityImprovementRegistry.unregister(aqueduct);
+
+    expect(additionalData.data(cityGrowth)).to.deep.equal({
+      size: 10,
+      needs: 'Aqueduct',
+    });
+
+    // And it doesn't grow: the growth is undone.
+    cityGrowth.grow();
+
+    expect(cityGrowth.size()).to.equal(12);
+  });
 });
