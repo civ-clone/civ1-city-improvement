@@ -9,6 +9,7 @@ import Effect from '@civ-clone/core-rule/Effect';
 import Shrink from '@civ-clone/core-city-growth/Rules/Shrink';
 import cityGrow from '@civ-clone/civ1-city/Rules/City/grow';
 import grow from '../Rules/City/grow';
+import growthLimitData from '../AdditionalData/growthLimit';
 import created from '@civ-clone/civ1-city/Rules/City/created';
 import improvementCreated from '../Rules/CityImprovement/created';
 import setUpCity from '@civ-clone/civ1-city/tests/lib/setUpCity';
@@ -102,5 +103,42 @@ describe('city:grow', (): void => {
 
     expect(cityGrowth.size()).to.equal(10);
     expect(causes).to.deep.equal([Aqueduct]);
+  });
+
+  // civ-clone/web-renderer#781: what a renderer is told in place of turns to a growth that won't happen.
+  it('sends the Aqueduct a city at size 10 needs to grow, and nothing below that or once it has one', async (): Promise<void> => {
+    const [additionalData] = growthLimitData(cityImprovementRegistry),
+      small = cityGrowthRegistry.getByCity(
+        await setUpCity({
+          size: 9,
+          ruleRegistry,
+          cityGrowthRegistry,
+          playerWorldRegistry,
+          workedTileRegistry,
+        })
+      ),
+      city = await setUpCity({
+        size: 10,
+        ruleRegistry,
+        cityGrowthRegistry,
+        playerWorldRegistry,
+        workedTileRegistry,
+      }),
+      cityGrowth = cityGrowthRegistry.getByCity(city);
+
+    expect(additionalData.key()).to.equal('limit');
+    expect(additionalData.data(small)).to.equal(null);
+    expect(additionalData.data(cityGrowth)).to.deep.equal({
+      size: 10,
+      needs: 'Aqueduct',
+    });
+
+    new Aqueduct(city, ruleRegistry);
+
+    expect(additionalData.data(cityGrowth)).to.equal(null);
+
+    cityGrowth.grow();
+
+    expect(cityGrowth.size()).to.equal(11);
   });
 });
