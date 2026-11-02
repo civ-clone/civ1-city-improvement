@@ -7,7 +7,8 @@ import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
 import growthLimit, { aqueductSizeLimit } from '../lib/growthLimit';
 import { typeNameOf } from '@civ-clone/core-data-object/DataObject';
 
-// `size` is the largest the city grows without `needs`.
+// `size` is the limit itself: a city can be past it (captured, or joined by Settlers), and still not grow without
+//  `needs`.
 export type GrowthLimit = { size: number; needs: string };
 
 /**
