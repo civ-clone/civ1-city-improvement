@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.register = void 0;
 const core_game_1 = require("@civ-clone/core-game");
+const growthLimit_1 = require("./AdditionalData/growthLimit");
 const pollution_1 = require("./AdditionalData/pollution");
-const register = (game) => game.additionalData.register(...(0, pollution_1.default)(game.rules, game.cityImprovements, game.cityGrowth, game.playerResearch));
+const register = (game) => game.additionalData.register(...(0, growthLimit_1.default)(game.cityImprovements), ...(0, pollution_1.default)(game.rules, game.cityImprovements, game.cityGrowth, game.playerResearch));
 exports.register = register;
 // Imported for this side effect, as `registerRules` is.
 (0, exports.register)(core_game_1.defaultGame);
