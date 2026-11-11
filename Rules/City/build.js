@@ -9,6 +9,7 @@ const Terrains_1 = require("@civ-clone/civ1-world/Terrains");
 const CityImprovement_1 = require("@civ-clone/core-city-improvement/CityImprovement");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
+const RuleIds_1 = require("../../RuleIds");
 const CityImprovements_1 = require("../../CityImprovements");
 const Requirements_1 = require("../../Requirements");
 /** An improvement is built once in each city: a state of the city, so a rule written by hand. */
@@ -23,7 +24,7 @@ exports.notBuiltRule = notBuiltRule;
 const hydroPlantSiteRule = () => 
 // As v474.05, which checks the eight squares around the city, but not the city's own square (OpenCivOne's
 //  decompile, `Overlay_20.cs` `F20_0000_0000`). The book's "on or near" is looser.
-new Build_1.Build('civ1-city-improvement:city/build/hydro-plant-site', CityImprovements_1.HydroPlant, new Criterion_1.default((city, BuildItem) => BuildItem === CityImprovements_1.HydroPlant), new Effect_1.default((city) => new Criterion_1.default(() => city
+new Build_1.Build(RuleIds_1.HYDRO_PLANT_SITE_RULE, CityImprovements_1.HydroPlant, new Criterion_1.default((city, BuildItem) => BuildItem === CityImprovements_1.HydroPlant), new Effect_1.default((city) => new Criterion_1.default(() => city
     .tile()
     .getNeighbours()
     .some((tile) => tile.terrain() instanceof Terrains_1.Mountains ||

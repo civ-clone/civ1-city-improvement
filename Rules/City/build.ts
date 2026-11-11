@@ -19,6 +19,7 @@ import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import { Deriver } from '@civ-clone/core-requirement/RequirementRegistry';
 import Effect from '@civ-clone/core-rule/Effect';
+import { HYDRO_PLANT_SITE_RULE } from '../../RuleIds';
 import { HydroPlant } from '../../CityImprovements';
 import { IConstructor } from '@civ-clone/core-registry/Registry';
 import Tile from '@civ-clone/core-world/Tile';
@@ -53,7 +54,7 @@ export const hydroPlantSiteRule = (): Build =>
   // As v474.05, which checks the eight squares around the city, but not the city's own square (OpenCivOne's
   //  decompile, `Overlay_20.cs` `F20_0000_0000`). The book's "on or near" is looser.
   new Build(
-    'civ1-city-improvement:city/build/hydro-plant-site',
+    HYDRO_PLANT_SITE_RULE,
     HydroPlant,
     new Criterion(
       (city: City, BuildItem: IConstructor): boolean => BuildItem === HydroPlant
