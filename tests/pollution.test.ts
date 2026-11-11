@@ -13,12 +13,16 @@ import {
   Production,
   UnitSupportProduction,
 } from '@civ-clone/library-city/Yields';
+import { Trade } from '@civ-clone/civ1-world/Yields';
+import AIClient from '@civ-clone/core-ai-client/AIClient';
 import AdvanceRegistry from '@civ-clone/core-science/AdvanceRegistry';
 import City from '@civ-clone/core-city/City';
 import CityGrowthRegistry from '@civ-clone/core-city-growth/CityGrowthRegistry';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import CityImprovementRegistry from '@civ-clone/core-city-improvement/CityImprovementRegistry';
 import CityRegistry from '@civ-clone/core-city/CityRegistry';
+import Client from '@civ-clone/core-client/Client';
+import ClientRegistry from '@civ-clone/core-client/ClientRegistry';
 import Engine from '@civ-clone/core-engine/Engine';
 import FillGenerator from '@civ-clone/simple-world-generator/tests/lib/FillGenerator';
 import GameDifficultyRegistry from '@civ-clone/core-difficulty/GameDifficultyRegistry';
@@ -42,9 +46,15 @@ import pollutionData from '../AdditionalData/pollution';
 
 // civ-clone/web-renderer#32: how much a city pollutes, and where.
 describe('pollution', (): void => {
-  // `rolls` are what the random number generator returns, in turn, then 0.
-  const setUp = async (size: number, rolls: number[] = []) => {
+  // `rolls` are what the random number generator returns, in turn, then 0. The city is the human's unless told
+  //  otherwise.
+  const setUp = async (
+    size: number,
+    rolls: number[] = [],
+    owner: 'human' | 'computer' | 'nobody' = 'human'
+  ) => {
     const ruleRegistry = new RuleRegistry(),
+      clientRegistry = new ClientRegistry(),
       cityRegistry = new CityRegistry(),
       cityGrowthRegistry = new CityGrowthRegistry(),
       cityImprovementRegistry = new CityImprovementRegistry(),
@@ -68,7 +78,8 @@ describe('pollution', (): void => {
         new GameDifficultyRegistry(),
         ruleRegistry,
         engine,
-        (): number => rolls.shift() ?? 0
+        (): number => rolls.shift() ?? 0,
+        clientRegistry
       )
     );
 
@@ -88,6 +99,15 @@ describe('pollution', (): void => {
 
     cityRegistry.register(city);
     playerResearchRegistry.register(playerResearch);
+
+    if (owner === 'human') {
+      clientRegistry.register(new Client(city.player()));
+    }
+
+    if (owner === 'computer') {
+      clientRegistry.register(new AIClient(city.player()));
+    }
+
     engine.on('city:polluted', (pollutingCity: City, tile: Tile) =>
       events.push([pollutingCity, tile])
     );
@@ -137,6 +157,7 @@ describe('pollution', (): void => {
       points,
       polluted,
       processTurn,
+      rolls,
       ruleRegistry,
       world,
     };
@@ -220,7 +241,7 @@ describe('pollution', (): void => {
     });
   });
 
-  describe('each turn', (): void => {
+  describe("each turn, in the human's cities", (): void => {
     it('pollutes a square around the city when 2 × points beats the roll', async (): Promise<void> => {
       // 30 shields is 10 points. With no level chosen the game is played at King, so with 1 advance known the roll is
       //  out of 256 − floor(1 × 3 ÷ 2) = 255: 20 beats a roll of 19, but not one of 20.
@@ -249,6 +270,18 @@ describe('pollution', (): void => {
       expect(events.length).to.equal(0);
     });
 
+    it('rolls once a turn, for the shields, not for any other yield', async (): Promise<void> => {
+      const { city, events, ruleRegistry, rolls } = await setUp(1, [0, 0]);
+
+      ruleRegistry.process(ProcessYield, new Trade(100), city, [
+        new Production(100),
+        new Trade(100),
+      ]);
+
+      expect(events.length).to.equal(0);
+      expect(rolls).to.eql([0, 0]);
+    });
+
     it("doesn't pollute Ocean, a city or a polluted square, and doesn't roll again", async (): Promise<void> => {
       for (const prepare of [
         (tile: Tile): void => tile.setTerrain(new Ocean()),
@@ -274,6 +307,41 @@ describe('pollution', (): void => {
         expect(setup.events.length).to.equal(0);
         expect(setup.polluted().length).to.equal(before);
       }
+    });
+  });
+
+  // v474.05 rolls only for the human's cities (civ-clone/web-renderer#954); `civ1-enhanced` rolls for every city.
+  describe("never in a computer player's cities, as v474.05", (): void => {
+    it("neither pollutes nor rolls for a computer player's city, however much it pollutes", async (): Promise<void> => {
+      const { events, polluted, processTurn, rolls } = await setUp(
+        1,
+        [0, 0],
+        'computer'
+      );
+
+      processTurn(100);
+
+      expect(polluted().length).to.equal(0);
+      expect(events.length).to.equal(0);
+      expect(rolls).to.eql([0, 0]);
+    });
+
+    it('nor for a city whose player has no client', async (): Promise<void> => {
+      const { events, processTurn, rolls } = await setUp(1, [0, 0], 'nobody');
+
+      processTurn(100);
+
+      expect(events.length).to.equal(0);
+      expect(rolls).to.eql([0, 0]);
+    });
+
+    it("and does for the human's, from the same rolls", async (): Promise<void> => {
+      const { events, processTurn, rolls } = await setUp(1, [0, 0], 'human');
+
+      processTurn(100);
+
+      expect(events.length).to.equal(1);
+      expect(rolls).to.eql([]);
     });
   });
 });

@@ -30,24 +30,29 @@ import {
   TileImprovementRegistry,
   instance as tileImprovementRegistryInstance,
 } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
+import {
+  ClientRegistry,
+  instance as clientRegistryInstance,
+} from '@civ-clone/core-client/ClientRegistry';
 import City from '@civ-clone/core-city/City';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import { Pollution } from '@civ-clone/civ1-world/TileImprovements';
+import { POLLUTION_RULE } from '../../RuleIds';
 import ProcessYield from '@civ-clone/core-city/Rules/ProcessYield';
 import { Production } from '../../Yields';
-import Tile from '@civ-clone/core-world/Tile';
-import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import Yield from '@civ-clone/core-yield/Yield';
 import { instance as rngInstance } from '@civ-clone/core-random';
-import { levelOf } from '@civ-clone/civ1-difficulty/level';
-import pollution from '../../lib/pollution';
+import isHuman from '@civ-clone/civ1-difficulty/isHuman';
+import pollute from '../../lib/pollute';
 
-// Each turn a city with pollution (`lib/pollution`) may pollute one of the 20 squares around it, as v474.05
-//  does (`CityWorker.cs` ~L3710-3751, civ-clone/web-renderer#32): when `2 × points` beats a roll of
-//  `0 .. 255 − advances known × difficulty ÷ 2`, a random one of those squares is polluted, unless it's Ocean, a city or
-//  already polluted (no second roll). v474.05 only rolls for the human's cities; here every city does (Dom's decision on
-//  #32).
+// Each turn a city of the human's with pollution (`lib/pollution`) may pollute one of the 20 squares around it
+//  (`lib/pollute`, civ-clone/web-renderer#32). As v474.05, only the human's cities roll (civd `CITYMGT.C`
+//  `city_process()`, civ-clone/web-renderer#954):
+//
+//      if (selected_owner == civnow) {
+//          pollution_k = town_res_sums[1] / plant_waste_divisor - 20;
+//
+//  `civ1-enhanced` rolls for every city, taking this rule's place while its set is on.
 export const getRules: (
   cityRegistry?: CityRegistry,
   cityImprovementRegistry?: CityImprovementRegistry,
@@ -57,7 +62,8 @@ export const getRules: (
   gameDifficultyRegistry?: GameDifficultyRegistry,
   ruleRegistry?: RuleRegistry,
   engine?: Engine,
-  randomNumberGenerator?: () => number
+  randomNumberGenerator?: () => number,
+  clientRegistry?: ClientRegistry
 ) => ProcessYield[] = (
   cityRegistry: CityRegistry = cityRegistryInstance,
   cityImprovementRegistry: CityImprovementRegistry = cityImprovementRegistryInstance,
@@ -67,65 +73,31 @@ export const getRules: (
   gameDifficultyRegistry: GameDifficultyRegistry = gameDifficultyRegistryInstance,
   ruleRegistry: RuleRegistry = ruleRegistryInstance,
   engine: Engine = engineInstance,
-  randomNumberGenerator: () => number = rngInstance
+  randomNumberGenerator: () => number = rngInstance,
+  clientRegistry: ClientRegistry = clientRegistryInstance
 ): ProcessYield[] => [
   new ProcessYield(
-    'civ1-city-improvement:city/process-yield/pollution',
+    POLLUTION_RULE,
     // Once a turn: the consolidated shields are processed once per city.
     new Criterion(
       (cityYield: Yield): boolean => cityYield instanceof Production
     ),
-    new Effect((cityYield: Yield, city: City, cityYields: Yield[]): void => {
-      const points = pollution(
-        city,
-        cityYields,
-        ruleRegistry,
+    new Criterion((cityYield: Yield, city: City): boolean =>
+      isHuman(city.player(), clientRegistry)
+    ),
+    new Effect((cityYield: Yield, city: City, cityYields: Yield[]): void =>
+      pollute(city, cityYields, {
+        cityRegistry,
         cityImprovementRegistry,
         cityGrowthRegistry,
-        playerResearchRegistry
-      );
-
-      if (points <= 0) {
-        return;
-      }
-
-      // Advances count from 1, as `civ1-science`'s research cost counts them.
-      const advancesKnown =
-          playerResearchRegistry.getByPlayer(city.player()).complete().length +
-          1,
-        range =
-          256 -
-          Math.floor((advancesKnown * levelOf(gameDifficultyRegistry)) / 2);
-
-      if (2 * points <= Math.floor(randomNumberGenerator() * range)) {
-        return;
-      }
-
-      const around = city
-          .tiles()
-          .entries()
-          .filter((tile: Tile): boolean => tile !== city.tile()),
-        tile = around[Math.floor(randomNumberGenerator() * around.length)];
-
-      if (
-        !tile ||
-        tile.isWater() ||
-        cityRegistry.getByTile(tile) !== null ||
-        tileImprovementRegistry
-          .getByTile(tile)
-          .some(
-            (improvement: TileImprovement): boolean =>
-              improvement instanceof Pollution
-          )
-      ) {
-        return;
-      }
-
-      // Building it processes `Built`, which puts it on the tile.
-      new Pollution(tile, ruleRegistry);
-
-      engine.emit('city:polluted', city, tile);
-    })
+        playerResearchRegistry,
+        tileImprovementRegistry,
+        gameDifficultyRegistry,
+        ruleRegistry,
+        engine,
+        randomNumberGenerator,
+      })
+    )
   ),
 ];
 
