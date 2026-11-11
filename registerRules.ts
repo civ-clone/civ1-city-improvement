@@ -56,7 +56,8 @@ export const register = (game: Game): void => {
       game.difficulty,
       game.rules,
       game.engine,
-      game.rng
+      game.rng,
+      game.clients
     ),
     ...cityPollutionDivisor(game.cityImprovements),
     ...cityImprovementCreated(game.cityImprovements, game.engine),
