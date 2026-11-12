@@ -9,7 +9,8 @@ import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
 import { FoodStorage } from '../../Yields';
 import Grow from '@civ-clone/core-city-growth/Rules/Grow';
-import growthLimit, { aqueductSizeLimit } from '../../lib/growthLimit';
+import { growthLimit } from '@civ-clone/base-city-growth-limit/lib/growthLimit';
+import { growthLimits } from '../../lib/growthLimit';
 
 export const getRules: (
   cityImprovementRegistry?: CityImprovementRegistry
@@ -18,11 +19,15 @@ export const getRules: (
 ): Grow[] => [
   new Grow(
     // Past the limit, as it has just grown: shrinking back undoes the growth.
-    new Criterion(
-      (cityGrowth: CityGrowth): boolean =>
-        cityGrowth.size() > aqueductSizeLimit &&
-        growthLimit(cityGrowth, cityImprovementRegistry) !== null
-    ),
+    new Criterion((cityGrowth: CityGrowth): boolean => {
+      const limit = growthLimit(
+        cityGrowth,
+        growthLimits,
+        cityImprovementRegistry
+      );
+
+      return limit !== null && cityGrowth.size() > limit[0];
+    }),
     // The missing Aqueduct is what keeps it from growing (civ-clone/web-renderer#400).
     new Effect((cityGrowth: CityGrowth): void => cityGrowth.shrink(Aqueduct))
   ),

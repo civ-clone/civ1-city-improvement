@@ -4,12 +4,15 @@ import {
 } from '@civ-clone/core-city-improvement/CityImprovementRegistry';
 import AdditionalData from '@civ-clone/core-data-object/AdditionalData';
 import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
-import growthLimit, { aqueductSizeLimit } from '../lib/growthLimit';
-import { typeNameOf } from '@civ-clone/core-data-object/DataObject';
+import {
+  GrowthLimitData,
+  growthLimitData,
+} from '@civ-clone/base-city-growth-limit/lib/growthLimit';
+import { growthLimits } from '../lib/growthLimit';
 
 // `size` is the limit itself: a city can be past it (captured, or joined by Settlers), and still not grow without
 //  `needs`.
-export type GrowthLimit = { size: number; needs: string };
+export type GrowthLimit = GrowthLimitData;
 
 /**
  * What the city needs before it can grow past its size (`lib/growthLimit`), so a renderer can say so rather than count
@@ -22,13 +25,8 @@ export const getAdditionalData = (
   new AdditionalData(
     CityGrowth,
     'limit',
-    (cityGrowth: CityGrowth): GrowthLimit | null => {
-      const needs = growthLimit(cityGrowth, cityImprovementRegistry);
-
-      return needs === null
-        ? null
-        : { size: aqueductSizeLimit, needs: typeNameOf(needs) };
-    }
+    (cityGrowth: CityGrowth): GrowthLimit | null =>
+      growthLimitData(cityGrowth, growthLimits, cityImprovementRegistry)
   ),
 ];
 

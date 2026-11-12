@@ -28,7 +28,8 @@ export type PolluteDependencies = {
  *
  * When `2 × points` beats a roll of `0 .. 255 − advances known × difficulty ÷ 2`, a random one of the 20 squares around
  * the city is polluted, unless it's Ocean, a city or already polluted (no second roll), and `city:polluted` is emitted.
- * Which cities roll is the rule's: whichever rule rolls does so through this (civ-clone/web-renderer#954).
+ * Which cities roll is the rule's: whichever rule rolls does so through this (civ-clone/web-renderer#954). The roll is
+ * `base-city-pollution`'s; the 256, the count from 1, the difficulty and the `Pollution` are Civ1's.
  */
 export declare const pollute: (
   city: City,
