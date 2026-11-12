@@ -5,7 +5,7 @@ const CityImprovementRegistry_1 = require("@civ-clone/core-city-improvement/City
 const CityImprovements_1 = require("../../CityImprovements");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
-const PollutionDivisor_1 = require("../PollutionDivisor");
+const PollutionDivisor_1 = require("@civ-clone/base-city-pollution/Rules/PollutionDivisor");
 // A Hydro or Nuclear Plant halves the shields that count towards pollution, and a Recycling Center thirds them in
 //  place of that (v474.05 `CityWorker.cs` ~L714-761).
 const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance) => [

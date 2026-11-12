@@ -1,8 +1,4 @@
-import City from '@civ-clone/core-city/City';
-import Rule from '@civ-clone/core-rule/Rule';
-
-// What a city's shields are divided by before they count towards pollution (civ-clone/web-renderer#32). The largest
-//  divisor any rule gives applies, or 1 when none does.
-export class PollutionDivisor extends Rule<[City], number> {}
-
-export default PollutionDivisor;
+// What a city's shields are divided by before they count towards pollution (civ-clone/web-renderer#32), now
+//  `base-city-pollution`'s. Re-exported, the same class, for the packages that register one from here (`civ1-wonder`).
+export { PollutionDivisor } from '@civ-clone/base-city-pollution/Rules/PollutionDivisor';
+export { default } from '@civ-clone/base-city-pollution/Rules/PollutionDivisor';

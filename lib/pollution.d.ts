@@ -11,7 +11,7 @@ export declare const pollutingAdvances: (typeof Automobile)[];
  * civ-clone/web-renderer#32):
  * its shields (after the Factory and plant bonuses, before unit support) divided by its `PollutionDivisor`, plus its
  * size times the polluting advances its owner knows (none with Mass Transit) over 4, less 20. Only a value above 0
- * risks pollution.
+ * risks pollution. The arithmetic is `base-city-pollution`'s; the numbers, advances and improvement are Civ1's.
  */
 export declare const pollution: (
   city: City,

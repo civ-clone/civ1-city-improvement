@@ -7,11 +7,13 @@ import { GameDifficultyRegistry } from '@civ-clone/core-difficulty/GameDifficult
 import { PlayerResearchRegistry } from '@civ-clone/core-science/PlayerResearchRegistry';
 import { Pollution } from '@civ-clone/civ1-world/TileImprovements';
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
-import Tile from '@civ-clone/core-world/Tile';
-import TileImprovement from '@civ-clone/core-tile-improvement/TileImprovement';
 import { TileImprovementRegistry } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import Yield from '@civ-clone/core-yield/Yield';
 import { levelOf } from '@civ-clone/civ1-difficulty/level';
+import {
+  advancesAndDifficultyRange,
+  pollute as rollForPollution,
+} from '@civ-clone/base-city-pollution/lib/pollute';
 import pollution from './pollution';
 
 export type PolluteDependencies = {
@@ -35,7 +37,8 @@ export type PolluteDependencies = {
  *
  * When `2 × points` beats a roll of `0 .. 255 − advances known × difficulty ÷ 2`, a random one of the 20 squares around
  * the city is polluted, unless it's Ocean, a city or already polluted (no second roll), and `city:polluted` is emitted.
- * Which cities roll is the rule's: whichever rule rolls does so through this (civ-clone/web-renderer#954).
+ * Which cities roll is the rule's: whichever rule rolls does so through this (civ-clone/web-renderer#954). The roll is
+ * `base-city-pollution`'s; the 256, the count from 1, the difficulty and the `Pollution` are Civ1's.
  */
 export const pollute = (
   city: City,
@@ -51,54 +54,34 @@ export const pollute = (
     engine,
     randomNumberGenerator,
   }: PolluteDependencies
-): void => {
-  const points = pollution(
+): void =>
+  rollForPollution(
     city,
-    cityYields,
-    ruleRegistry,
-    cityImprovementRegistry,
-    cityGrowthRegistry,
-    playerResearchRegistry
+    pollution(
+      city,
+      cityYields,
+      ruleRegistry,
+      cityImprovementRegistry,
+      cityGrowthRegistry,
+      playerResearchRegistry
+    ),
+    {
+      Pollution,
+      // Advances count from 1, as `civ1-science`'s research cost counts them.
+      rollRange: advancesAndDifficultyRange(
+        256,
+        1,
+        (): number => levelOf(gameDifficultyRegistry),
+        playerResearchRegistry
+      ),
+    },
+    {
+      cityRegistry,
+      tileImprovementRegistry,
+      ruleRegistry,
+      engine,
+      randomNumberGenerator,
+    }
   );
-
-  if (points <= 0) {
-    return;
-  }
-
-  // Advances count from 1, as `civ1-science`'s research cost counts them.
-  const advancesKnown =
-      playerResearchRegistry.getByPlayer(city.player()).complete().length + 1,
-    range =
-      256 - Math.floor((advancesKnown * levelOf(gameDifficultyRegistry)) / 2);
-
-  if (2 * points <= Math.floor(randomNumberGenerator() * range)) {
-    return;
-  }
-
-  const around = city
-      .tiles()
-      .entries()
-      .filter((tile: Tile): boolean => tile !== city.tile()),
-    tile = around[Math.floor(randomNumberGenerator() * around.length)];
-
-  if (
-    !tile ||
-    tile.isWater() ||
-    cityRegistry.getByTile(tile) !== null ||
-    tileImprovementRegistry
-      .getByTile(tile)
-      .some(
-        (improvement: TileImprovement): boolean =>
-          improvement instanceof Pollution
-      )
-  ) {
-    return;
-  }
-
-  // Building it processes `Built`, which puts it on the tile.
-  new Pollution(tile, ruleRegistry);
-
-  engine.emit('city:polluted', city, tile);
-};
 
 export default pollute;

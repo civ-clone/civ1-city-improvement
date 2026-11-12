@@ -11,7 +11,7 @@ import City from '@civ-clone/core-city/City';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import Effect from '@civ-clone/core-rule/Effect';
-import PollutionDivisor from '../PollutionDivisor';
+import PollutionDivisor from '@civ-clone/base-city-pollution/Rules/PollutionDivisor';
 
 // A Hydro or Nuclear Plant halves the shields that count towards pollution, and a Recycling Center thirds them in
 //  place of that (v474.05 `CityWorker.cs` ~L714-761).

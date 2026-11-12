@@ -1,4 +1,2 @@
-import City from '@civ-clone/core-city/City';
-import Rule from '@civ-clone/core-rule/Rule';
-export declare class PollutionDivisor extends Rule<[City], number> {}
-export default PollutionDivisor;
+export { PollutionDivisor } from '@civ-clone/base-city-pollution/Rules/PollutionDivisor';
+export { default } from '@civ-clone/base-city-pollution/Rules/PollutionDivisor';
