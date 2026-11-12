@@ -38,8 +38,8 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
-    "@civ-clone/base-city-growth-limit": "github:civ-clone/base-city-growth-limit#feat/growth-limits",
-    "@civ-clone/base-city-pollution": "github:civ-clone/base-city-pollution#feat/pollution",
+    "@civ-clone/base-city-growth-limit": "^0.1.0",
+    "@civ-clone/base-city-pollution": "^0.1.0",
     "@civ-clone/base-diplomacy-declaration-peace": "^0.1.0",
     "@civ-clone/civ1-difficulty": "github:civ-clone/civ1-difficulty",
     "@civ-clone/civ1-science": "github:civ-clone/civ1-science",
