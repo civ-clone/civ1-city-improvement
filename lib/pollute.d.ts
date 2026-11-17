@@ -26,10 +26,12 @@ export type PolluteDependencies = {
  *     if (pollution_k * 2 > rand_scaled(256 - tech_count[selected_owner] * cur_tier / 2)) {
  *         scratch_i = rand_scaled(20);
  *
- * When `2 × points` beats a roll of `0 .. 255 − advances known × difficulty ÷ 2`, a random one of the 20 squares around
+ * When `2 × points` beats a roll of `0 .. 255 − tech_count × difficulty ÷ 2`, a random one of the 20 squares around
  * the city is polluted, unless it's Ocean, a city or already polluted (no second roll), and `city:polluted` is emitted.
  * Which cities roll is the rule's: whichever rule rolls does so through this (civ-clone/web-renderer#954). The roll is
- * `base-city-pollution`'s; the 256, the count from 1, the difficulty and the `Pollution` are Civ1's.
+ * `base-city-pollution`'s; the 256, the count from 1, the difficulty and the `Pollution` are Civ1's. `tech_count` is
+ * the advances counted by the game's `AdvanceCount` rules (civ1-science's counts those gained in play), plus 1, as for
+ * the research cost (civ-clone/web-renderer#973).
  */
 export declare const pollute: (
   city: City,

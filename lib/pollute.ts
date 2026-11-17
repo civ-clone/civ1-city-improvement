@@ -10,10 +10,8 @@ import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import { TileImprovementRegistry } from '@civ-clone/core-tile-improvement/TileImprovementRegistry';
 import Yield from '@civ-clone/core-yield/Yield';
 import { levelOf } from '@civ-clone/civ1-difficulty/level';
-import {
-  advancesAndDifficultyRange,
-  pollute as rollForPollution,
-} from '@civ-clone/base-city-pollution/lib/pollute';
+import advanceCount from '@civ-clone/core-science/advanceCount';
+import { pollute as rollForPollution } from '@civ-clone/base-city-pollution/lib/pollute';
 import pollution from './pollution';
 
 export type PolluteDependencies = {
@@ -35,10 +33,12 @@ export type PolluteDependencies = {
  *     if (pollution_k * 2 > rand_scaled(256 - tech_count[selected_owner] * cur_tier / 2)) {
  *         scratch_i = rand_scaled(20);
  *
- * When `2 × points` beats a roll of `0 .. 255 − advances known × difficulty ÷ 2`, a random one of the 20 squares around
+ * When `2 × points` beats a roll of `0 .. 255 − tech_count × difficulty ÷ 2`, a random one of the 20 squares around
  * the city is polluted, unless it's Ocean, a city or already polluted (no second roll), and `city:polluted` is emitted.
  * Which cities roll is the rule's: whichever rule rolls does so through this (civ-clone/web-renderer#954). The roll is
- * `base-city-pollution`'s; the 256, the count from 1, the difficulty and the `Pollution` are Civ1's.
+ * `base-city-pollution`'s; the 256, the count from 1, the difficulty and the `Pollution` are Civ1's. `tech_count` is
+ * the advances counted by the game's `AdvanceCount` rules (civ1-science's counts those gained in play), plus 1, as for
+ * the research cost (civ-clone/web-renderer#973).
  */
 export const pollute = (
   city: City,
@@ -67,13 +67,17 @@ export const pollute = (
     ),
     {
       Pollution,
-      // Advances count from 1, as `civ1-science`'s research cost counts them.
-      rollRange: advancesAndDifficultyRange(
-        256,
-        1,
-        (): number => levelOf(gameDifficultyRegistry),
-        playerResearchRegistry
-      ),
+      rollRange: (city: City): number =>
+        256 -
+        Math.floor(
+          ((advanceCount(
+            playerResearchRegistry.getByPlayer(city.player()),
+            ruleRegistry
+          ) +
+            1) *
+            levelOf(gameDifficultyRegistry)) /
+            2
+        ),
     },
     {
       cityRegistry,
