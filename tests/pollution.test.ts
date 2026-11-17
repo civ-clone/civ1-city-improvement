@@ -14,6 +14,8 @@ import {
   UnitSupportProduction,
 } from '@civ-clone/library-city/Yields';
 import { Trade } from '@civ-clone/civ1-world/Yields';
+import AdvanceCount from '@civ-clone/core-science/Rules/AdvanceCount';
+import Effect from '@civ-clone/core-rule/Effect';
 import AIClient from '@civ-clone/core-ai-client/AIClient';
 import AdvanceRegistry from '@civ-clone/core-science/AdvanceRegistry';
 import City from '@civ-clone/core-city/City';
@@ -260,6 +262,38 @@ describe('pollution', (): void => {
 
       expect(fails.polluted().length).to.equal(0);
       expect(fails.events.length).to.equal(0);
+    });
+
+    it("narrows the roll by the advances the game's `AdvanceCount` rules count (civ-clone/web-renderer#973)", async (): Promise<void> => {
+      // King: with 10 counted the roll is out of 256 − floor(11 × 3 ÷ 2) = 240, and 20.2 / 256 of that rolls 18, which
+      //  20 beats; with none counted it's out of 255, and 20.2 / 256 of that rolls 20, which 20 doesn't.
+      const counted = await setUp(1, [20.2 / 256, 0]);
+
+      counted.ruleRegistry.register(
+        new AdvanceCount(new Effect((): number => 10))
+      );
+      counted.processTurn(30);
+
+      expect(counted.polluted().length).to.equal(1);
+
+      // Three starting advances are known, but only those the rules count narrow it: counting all three, the roll would
+      //  be out of 256 − floor(4 × 3 ÷ 2) = 250, which rolls 19, and pollutes.
+      const uncounted = await setUp(1, [20.2 / 256, 0]);
+
+      [Automobile, Industrialization, MassProduction].forEach((Started) =>
+        uncounted.playerResearch.addAdvance(Started, { starting: true })
+      );
+      uncounted.ruleRegistry.register(
+        new AdvanceCount(
+          new Effect(
+            (research: PlayerResearch): number =>
+              research.complete().length - research.startingAdvances().length
+          )
+        )
+      );
+      uncounted.processTurn(30);
+
+      expect(uncounted.polluted().length).to.equal(0);
     });
 
     it('never pollutes without points', async (): Promise<void> => {
