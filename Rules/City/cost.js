@@ -8,6 +8,7 @@ const PlayerResearchRegistry_1 = require("@civ-clone/core-science/PlayerResearch
 const Yields_1 = require("../../Yields");
 const Cost_1 = require("@civ-clone/core-city/Rules/Cost");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
+const Description_1 = require("@civ-clone/core-rule/Description");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 // The gold each improvement costs its city every turn.
 exports.maintenance = [
@@ -55,6 +56,11 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
             .getByCity(city)
             .filter((cityImprovement) => cityImprovement instanceof CityImprovementType);
         return new YieldType(cost, cityImprovement);
+    }), new Description_1.default({
+        type: 'upkeep',
+        subject: CityImprovementType,
+        yield: YieldType,
+        value: cost,
     }))),
     ...exports.barracksMaintenance.map(([CityImprovementType, YieldType, cost, RequiredAdvance, ObsoletingAdvance,]) => new Cost_1.default(new Criterion_1.default((city) => cityImprovementRegistry
         .getByCity(city)
@@ -69,6 +75,13 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance, 
             .getByCity(city)
             .filter((cityImprovement) => cityImprovement instanceof CityImprovementType);
         return new YieldType(cost, cityImprovement);
+    }), new Description_1.default({
+        type: 'upkeep',
+        subject: CityImprovementType,
+        yield: YieldType,
+        value: cost,
+        from: RequiredAdvance,
+        until: ObsoletingAdvance,
     }))),
 ];
 exports.getRules = getRules;

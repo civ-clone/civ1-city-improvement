@@ -37,6 +37,7 @@ import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import { CityImprovementMaintenanceGold } from '../../Yields';
 import Cost from '@civ-clone/core-city/Rules/Cost';
 import Criterion from '@civ-clone/core-rule/Criterion';
+import Description from '@civ-clone/core-rule/Description';
 import Effect from '@civ-clone/core-rule/Effect';
 import Yield from '@civ-clone/core-yield/Yield';
 
@@ -124,6 +125,12 @@ export const getRules: (
             );
 
           return new YieldType(cost, cityImprovement) as Yield;
+        }),
+        new Description({
+          type: 'upkeep',
+          subject: CityImprovementType,
+          yield: YieldType,
+          value: cost,
         })
       )
   ),
@@ -168,6 +175,14 @@ export const getRules: (
             );
 
           return new YieldType(cost, cityImprovement) as Yield;
+        }),
+        new Description({
+          type: 'upkeep',
+          subject: CityImprovementType,
+          yield: YieldType,
+          value: cost,
+          from: RequiredAdvance,
+          until: ObsoletingAdvance,
         })
       )
   ),

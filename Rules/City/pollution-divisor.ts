@@ -10,6 +10,7 @@ import {
 import City from '@civ-clone/core-city/City';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Criterion from '@civ-clone/core-rule/Criterion';
+import Description from '@civ-clone/core-rule/Description';
 import Effect from '@civ-clone/core-rule/Effect';
 import PollutionDivisor from '@civ-clone/base-city-pollution/Rules/PollutionDivisor';
 
@@ -38,7 +39,12 @@ export const getRules: (
                 cityImprovement instanceof Improvement
             )
         ),
-        new Effect((): number => divisor)
+        new Effect((): number => divisor),
+        new Description({
+          type: 'pollution_divisor',
+          subject: Improvement,
+          value: divisor,
+        })
       )
   );
 

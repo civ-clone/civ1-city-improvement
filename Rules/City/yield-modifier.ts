@@ -18,6 +18,7 @@ import { Corruption, Gold, Luxuries, Production, Research } from '../../Yields';
 import City from '@civ-clone/core-city/City';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Criterion from '@civ-clone/core-rule/Criterion';
+import Description from '@civ-clone/core-rule/Description';
 import Effect from '@civ-clone/core-rule/Effect';
 import Low from '@civ-clone/core-rule/Priorities/Low';
 import Yield from '@civ-clone/core-yield/Yield';
@@ -26,12 +27,34 @@ import { reduceYield } from '@civ-clone/core-yield/lib/reduceYields';
 
 // As v474.05 (OpenCivOne's decompile, `CityWorker.cs`): a Factory adds 2/4 of the city's base shields and a Mfg. Plant
 //  4/4, in place of the Factory's. A plant adds another 2/4, but no more than the Factory or Mfg. Plant does, so it
-//  does nothing on its own, and one plant is all that counts.
-const factories: [typeof CityImprovement, number][] = [
+//  does nothing on its own, and one plant is all that counts. Each rule below, and what it says it does (its
+//  `Description`, for the Civilopedia, civ-clone/web-renderer#1196), reads these tables, so the two can't disagree.
+export const factories: [typeof CityImprovement, number][] = [
     [ManufacturingPlant, 4],
     [Factory, 2],
   ],
-  plants: (typeof CityImprovement)[] = [PowerPlant, HydroPlant, NuclearPlant];
+  plants: (typeof CityImprovement)[] = [PowerPlant, HydroPlant, NuclearPlant],
+  plantQuarters: number = 2;
+
+// As v474.05, each of these adds half of the running total, so a Bank adds half of what the Marketplace left. The
+//  Courthouse's half is of the corruption, which is counted as trade lost, so it halves it.
+export const runningTotalModifiers: [
+  typeof CityImprovement,
+  typeof Yield,
+  number
+][] = [
+  [Marketplace, Gold, 0.5],
+  [Marketplace, Luxuries, 0.5],
+  [Bank, Gold, 0.5],
+  [Bank, Luxuries, 0.5],
+  [Courthouse, Corruption, 0.5],
+];
+
+// As v474.05, a Library and a University each add half of the city's base science, not of what the other added.
+export const scienceModifiers: [typeof CityImprovement, number][] = [
+  [Library, 0.5],
+  [University, 0.5],
+];
 
 export const getRules: (
   cityImprovementRegistry?: CityImprovementRegistry
@@ -49,16 +72,7 @@ export const getRules: (
       factories.find(([Improvement]) => has(city, Improvement));
 
   return [
-    // As v474.05, each of these adds half of the running total, so a Bank adds half of what the Marketplace left.
-    ...(
-      [
-        [Marketplace, Gold, 0.5],
-        [Marketplace, Luxuries, 0.5],
-        [Bank, Gold, 0.5],
-        [Bank, Luxuries, 0.5],
-        [Courthouse, Corruption, 0.5],
-      ] as [typeof CityImprovement, typeof Yield, number][]
-    ).map(
+    ...runningTotalModifiers.map(
       ([Improvement, YieldType, multiplier]): YieldModifier =>
         new YieldModifier(
           new Low(),
@@ -69,23 +83,36 @@ export const getRules: (
                 Math.floor(reduceYield(yields, YieldType) * multiplier),
                 Improvement.name
               )
-          )
+          ),
+          new Description({
+            type: 'yield_percent',
+            subject: Improvement,
+            yield: YieldType,
+            value: YieldType === Corruption ? -multiplier : multiplier,
+            of: 'total',
+          })
         )
     ),
 
-    // As v474.05, a Library and a University each add half of the city's base science, not of what the other added.
-    ...([Library, University] as (typeof CityImprovement)[]).map(
-      (Improvement): YieldModifier =>
+    ...scienceModifiers.map(
+      ([Improvement, multiplier]): YieldModifier =>
         new YieldModifier(
           new Low(),
           new Criterion((city: City): boolean => has(city, Improvement)),
           new Effect(
             (city: City, yields: Yield[], base: Yield[]): Yield =>
               new Research(
-                Math.floor(reduceYield(base, Research) / 2),
+                Math.floor(reduceYield(base, Research) * multiplier),
                 Improvement.name
               )
-          )
+          ),
+          new Description({
+            type: 'yield_percent',
+            subject: Improvement,
+            yield: Research,
+            value: multiplier,
+            of: 'base',
+          })
         )
     ),
 
@@ -99,7 +126,17 @@ export const getRules: (
           Math.floor((reduceYield(base, Production) * quarters) / 4),
           Improvement.name
         );
-      })
+      }),
+      new Description(
+        ...factories.map(([Improvement, quarters], index) => ({
+          type: 'yield_percent',
+          subject: Improvement,
+          yield: Production,
+          value: quarters / 4,
+          of: 'base',
+          replaces: factories.slice(index + 1).map(([Replaced]) => Replaced),
+        }))
+      )
     ),
 
     new YieldModifier(
@@ -111,9 +148,20 @@ export const getRules: (
       new Effect(
         (city: City, yields: Yield[], base: Yield[]): Yield =>
           new Production(
-            Math.floor((reduceYield(base, Production) * 2) / 4),
+            Math.floor((reduceYield(base, Production) * plantQuarters) / 4),
             plants.find((Plant) => has(city, Plant))!.name
           )
+      ),
+      new Description(
+        ...plants.map((Plant) => ({
+          type: 'yield_percent',
+          subject: Plant,
+          yield: Production,
+          value: plantQuarters / 4,
+          of: 'base',
+          needs: factories.map(([Improvement]) => Improvement),
+          notWith: plants.filter((Other) => Other !== Plant),
+        }))
       )
     ),
   ];
