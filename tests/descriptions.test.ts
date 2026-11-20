@@ -50,14 +50,16 @@ describe('descriptions', (): void => {
                   other.subject === Subject && other.yield === YieldType
               )
         ),
-        given = [new YieldType(40)],
-        result = rule.process(city, given, given) as Yield;
+        // The running total and the city's base differ, so a share of the wrong one shows.
+        total = [new YieldType(80)],
+        base = [new YieldType(40)],
+        result = rule.process(city, total, base) as Yield,
+        of = (description.of === 'base' ? base : total)[0].value();
 
-      expect(rule.validate(city, given, given)).to.true;
+      expect(rule.validate(city, total, base)).to.true;
       expect(result).to.instanceOf(YieldType);
-      expect(Math.abs(result.value())).to.equal(
-        Math.floor(40 * Math.abs(description.value as number))
-      );
+      // The share added, sign and all: the Courthouse's −50% adds back half the corruption, counted below 0.
+      expect(result.value() / of).to.equal(description.value);
     });
   });
 
