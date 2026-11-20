@@ -4,8 +4,16 @@ import { CityImprovementRegistry } from '@civ-clone/core-city-improvement/CityIm
 import { PlayerResearchRegistry } from '@civ-clone/core-science/PlayerResearchRegistry';
 import { RuleRegistry } from '@civ-clone/core-rule/RuleRegistry';
 import City from '@civ-clone/core-city/City';
+import { EffectDescription } from '@civ-clone/core-rule/Description';
+import { MassTransit } from '../CityImprovements';
 import Yield from '@civ-clone/core-yield/Yield';
 export declare const pollutingAdvances: (typeof Automobile)[];
+export declare const cleanedBy: (typeof MassTransit)[];
+/**
+ * What the pollution rules say about the improvements above (civ-clone/web-renderer#1196), for each rule that rolls
+ *  for pollution with `pollution` to give, so a rule that takes the place of Civ1's says it too.
+ */
+export declare const pollutionDescriptions: () => EffectDescription[];
 /**
  * A city's pollution: what v474.05 calls its "smokestack points", worked out each turn (`CityWorker.cs` ~L3710,
  * civ-clone/web-renderer#32):

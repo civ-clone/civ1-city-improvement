@@ -36,6 +36,8 @@ import {
 } from '@civ-clone/core-client/ClientRegistry';
 import City from '@civ-clone/core-city/City';
 import Criterion from '@civ-clone/core-rule/Criterion';
+import Description from '@civ-clone/core-rule/Description';
+import { pollutionDescriptions } from '../../lib/pollution';
 import Effect from '@civ-clone/core-rule/Effect';
 import { POLLUTION_RULE } from '../../RuleIds';
 import ProcessYield from '@civ-clone/core-city/Rules/ProcessYield';
@@ -97,7 +99,8 @@ export const getRules: (
         engine,
         randomNumberGenerator,
       })
-    )
+    ),
+    new Description(...pollutionDescriptions())
   ),
 ];
 

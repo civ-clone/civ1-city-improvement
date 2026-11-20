@@ -11,6 +11,7 @@ import City from '@civ-clone/core-city/City';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Created from '@civ-clone/core-unit/Rules/Created';
 import Criterion from '@civ-clone/core-rule/Criterion';
+import Description from '@civ-clone/core-rule/Description';
 import Effect from '@civ-clone/core-rule/Effect';
 import Unit from '@civ-clone/core-unit/Unit';
 import { Veteran } from '@civ-clone/civ1-unit/UnitImprovements';
@@ -34,7 +35,12 @@ export const getRules: (
     ),
     new Effect((unit: Unit): void =>
       unitImprovementRegistry.register(new Veteran(unit))
-    )
+    ),
+    new Description({
+      type: 'unit_improvement',
+      subject: Barracks,
+      improvement: Veteran,
+    })
   ),
 ];
 

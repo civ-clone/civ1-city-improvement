@@ -29,6 +29,7 @@ import {
   pollution as cityPollution,
 } from '@civ-clone/base-city-pollution/lib/pollution';
 import City from '@civ-clone/core-city/City';
+import { EffectDescription } from '@civ-clone/core-rule/Description';
 import { MassTransit } from '../CityImprovements';
 import Yield from '@civ-clone/core-yield/Yield';
 
@@ -39,6 +40,22 @@ export const pollutingAdvances = [
   MassProduction,
   Plastics,
 ];
+
+// The improvements that stop a city's population polluting (v474.05's Mass Transit).
+export const cleanedBy = [MassTransit];
+
+/**
+ * What the pollution rules say about the improvements above (civ-clone/web-renderer#1196), for each rule that rolls
+ *  for pollution with `pollution` to give, so a rule that takes the place of Civ1's says it too.
+ */
+export const pollutionDescriptions = (): EffectDescription[] =>
+  cleanedBy.map(
+    (Improvement): EffectDescription => ({
+      type: 'pollution_source_removed',
+      subject: Improvement,
+      source: 'population',
+    })
+  );
 
 /**
  * A city's pollution: what v474.05 calls its "smokestack points", worked out each turn (`CityWorker.cs` ~L3710,
@@ -63,7 +80,7 @@ export const pollution = (
       excluding: [UnitSupportProduction],
       populationFactor: advancesKnown(
         pollutingAdvances,
-        [MassTransit],
+        cleanedBy,
         playerResearchRegistry,
         cityImprovementRegistry
       ),

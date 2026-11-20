@@ -6,11 +6,15 @@ import {
 import CityGrowth from '@civ-clone/core-city-growth/CityGrowth';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Criterion from '@civ-clone/core-rule/Criterion';
+import Description from '@civ-clone/core-rule/Description';
 import Effect from '@civ-clone/core-rule/Effect';
 import { FoodStorage } from '../../Yields';
 import Grow from '@civ-clone/core-city-growth/Rules/Grow';
 import { growthLimit } from '@civ-clone/base-city-growth-limit/lib/growthLimit';
 import { growthLimits } from '../../lib/growthLimit';
+
+/** The share of the food box a Granary keeps when its city grows. */
+export const granaryStore: number = 0.5;
 
 export const getRules: (
   cityImprovementRegistry?: CityImprovementRegistry
@@ -29,7 +33,14 @@ export const getRules: (
       return limit !== null && cityGrowth.size() > limit[0];
     }),
     // The missing Aqueduct is what keeps it from growing (civ-clone/web-renderer#400).
-    new Effect((cityGrowth: CityGrowth): void => cityGrowth.shrink(Aqueduct))
+    new Effect((cityGrowth: CityGrowth): void => cityGrowth.shrink(Aqueduct)),
+    new Description(
+      ...growthLimits.map(([size, Improvement]) => ({
+        type: 'size_limit',
+        subject: Improvement,
+        value: size,
+      }))
+    )
   ),
   new Grow(
     new Criterion((cityGrowth: CityGrowth): boolean =>
@@ -41,8 +52,13 @@ export const getRules: (
         )
     ),
     new Effect((cityGrowth: CityGrowth): void =>
-      cityGrowth.add(new FoodStorage(cityGrowth.cost().value() / 2))
-    )
+      cityGrowth.add(new FoodStorage(cityGrowth.cost().value() * granaryStore))
+    ),
+    new Description({
+      type: 'growth_store',
+      subject: Granary,
+      value: granaryStore,
+    })
   ),
 ];
 

@@ -4,6 +4,7 @@ exports.getRules = void 0;
 const CityImprovementRegistry_1 = require("@civ-clone/core-city-improvement/CityImprovementRegistry");
 const CityImprovements_1 = require("../../CityImprovements");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
+const Description_1 = require("@civ-clone/core-rule/Description");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const PollutionDivisor_1 = require("@civ-clone/base-city-pollution/Rules/PollutionDivisor");
 // A Hydro or Nuclear Plant halves the shields that count towards pollution, and a Recycling Center thirds them in
@@ -14,7 +15,11 @@ const getRules = (cityImprovementRegistry = CityImprovementRegistry_1.instance) 
     [CityImprovements_1.RecyclingCenter, 3],
 ].map(([Improvement, divisor]) => new PollutionDivisor_1.default(`civ1-city-improvement:city/pollution-divisor/${Improvement.name}`, new Criterion_1.default((city) => cityImprovementRegistry
     .getByCity(city)
-    .some((cityImprovement) => cityImprovement instanceof Improvement)), new Effect_1.default(() => divisor)));
+    .some((cityImprovement) => cityImprovement instanceof Improvement)), new Effect_1.default(() => divisor), new Description_1.default({
+    type: 'pollution_divisor',
+    subject: Improvement,
+    value: divisor,
+})));
 exports.getRules = getRules;
 exports.default = exports.getRules;
 //# sourceMappingURL=pollution-divisor.js.map

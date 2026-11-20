@@ -11,6 +11,8 @@ const RuleRegistry_1 = require("@civ-clone/core-rule/RuleRegistry");
 const TileImprovementRegistry_1 = require("@civ-clone/core-tile-improvement/TileImprovementRegistry");
 const ClientRegistry_1 = require("@civ-clone/core-client/ClientRegistry");
 const Criterion_1 = require("@civ-clone/core-rule/Criterion");
+const Description_1 = require("@civ-clone/core-rule/Description");
+const pollution_1 = require("../../lib/pollution");
 const Effect_1 = require("@civ-clone/core-rule/Effect");
 const RuleIds_1 = require("../../RuleIds");
 const ProcessYield_1 = require("@civ-clone/core-city/Rules/ProcessYield");
@@ -39,7 +41,7 @@ const getRules = (cityRegistry = CityRegistry_1.instance, cityImprovementRegistr
         ruleRegistry,
         engine,
         randomNumberGenerator,
-    }))),
+    })), new Description_1.default(...(0, pollution_1.pollutionDescriptions)())),
 ];
 exports.getRules = getRules;
 exports.default = exports.getRules;
