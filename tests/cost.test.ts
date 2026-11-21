@@ -49,7 +49,7 @@ describe('city:cost', (): void => {
       [Bank, 3, CityImprovementMaintenanceGold as unknown as typeof Yield],
       [Cathedral, 3, CityImprovementMaintenanceGold as unknown as typeof Yield],
       [CityWalls, 2, CityImprovementMaintenanceGold as unknown as typeof Yield],
-      [Colosseum, 2, CityImprovementMaintenanceGold as unknown as typeof Yield],
+      [Colosseum, 4, CityImprovementMaintenanceGold as unknown as typeof Yield],
       [
         Courthouse,
         1,
