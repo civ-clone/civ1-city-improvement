@@ -16,7 +16,7 @@ exports.maintenance = [
     [CityImprovements_1.Bank, Yields_1.CityImprovementMaintenanceGold, 3],
     [CityImprovements_1.Cathedral, Yields_1.CityImprovementMaintenanceGold, 3],
     [CityImprovements_1.CityWalls, Yields_1.CityImprovementMaintenanceGold, 2],
-    [CityImprovements_1.Colosseum, Yields_1.CityImprovementMaintenanceGold, 2],
+    [CityImprovements_1.Colosseum, Yields_1.CityImprovementMaintenanceGold, 4],
     [CityImprovements_1.Courthouse, Yields_1.CityImprovementMaintenanceGold, 1],
     [CityImprovements_1.Factory, Yields_1.CityImprovementMaintenanceGold, 4],
     [CityImprovements_1.Granary, Yields_1.CityImprovementMaintenanceGold, 1],

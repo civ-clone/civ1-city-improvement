@@ -47,7 +47,7 @@ export const maintenance = [
   [Bank, CityImprovementMaintenanceGold, 3],
   [Cathedral, CityImprovementMaintenanceGold, 3],
   [CityWalls, CityImprovementMaintenanceGold, 2],
-  [Colosseum, CityImprovementMaintenanceGold, 2],
+  [Colosseum, CityImprovementMaintenanceGold, 4],
   [Courthouse, CityImprovementMaintenanceGold, 1],
   [Factory, CityImprovementMaintenanceGold, 4],
   [Granary, CityImprovementMaintenanceGold, 1],
