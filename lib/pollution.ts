@@ -1,3 +1,4 @@
+import { Pollution } from '@civ-clone/civ1-world/TileImprovements';
 import {
   Automobile,
   Industrialization,
@@ -45,17 +46,30 @@ export const pollutingAdvances = [
 export const cleanedBy = [MassTransit];
 
 /**
- * What the pollution rules say about the improvements above (civ-clone/web-renderer#1196), for each rule that rolls
- *  for pollution with `pollution` to give, so a rule that takes the place of Civ1's says it too.
+ * What the pollution rules say about the improvements above (civ-clone/web-renderer#1196), and what causes Pollution
+ *  (civ-clone/web-renderer#621): a city's shields, and its citizens, more with each polluting advance. For each rule
+ *  that rolls for pollution with `pollution` to give, so a rule that takes the place of Civ1's says it too.
  */
-export const pollutionDescriptions = (): EffectDescription[] =>
-  cleanedBy.map(
+export const pollutionDescriptions = (): EffectDescription[] => [
+  ...cleanedBy.map(
     (Improvement): EffectDescription => ({
       type: 'pollution_source_removed',
       subject: Improvement,
       source: 'population',
     })
-  );
+  ),
+  {
+    type: 'caused_by',
+    subject: Pollution,
+    source: 'production',
+  },
+  {
+    type: 'caused_by',
+    subject: Pollution,
+    source: 'population',
+    with: pollutingAdvances,
+  },
+];
 
 /**
  * A city's pollution: what v474.05 calls its "smokestack points", worked out each turn (`CityWorker.cs` ~L3710,
