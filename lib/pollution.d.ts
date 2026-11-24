@@ -8,6 +8,8 @@ import { EffectDescription } from '@civ-clone/core-rule/Description';
 import { MassTransit } from '../CityImprovements';
 import Yield from '@civ-clone/core-yield/Yield';
 export declare const pollutingAdvances: (typeof Automobile)[];
+/** What a city's pollution must pass before it risks Pollution (v474.05 `CityWorker.cs` ~L3710). */
+export declare const POLLUTION_TOLERANCE = 20;
 export declare const cleanedBy: (typeof MassTransit)[];
 /**
  * What the pollution rules say about the improvements above (civ-clone/web-renderer#1196), and what causes Pollution

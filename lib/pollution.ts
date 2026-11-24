@@ -42,6 +42,9 @@ export const pollutingAdvances = [
   Plastics,
 ];
 
+/** What a city's pollution must pass before it risks Pollution (v474.05 `CityWorker.cs` ~L3710). */
+export const POLLUTION_TOLERANCE = 20;
+
 // The improvements that stop a city's population polluting (v474.05's Mass Transit).
 export const cleanedBy = [MassTransit];
 
@@ -68,6 +71,12 @@ export const pollutionDescriptions = (): EffectDescription[] => [
     subject: Pollution,
     source: 'population',
     with: pollutingAdvances,
+  },
+  // Only what passes the tolerance risks it (civ-clone/web-renderer#1339).
+  {
+    type: 'pollution_tolerance',
+    subject: Pollution,
+    value: POLLUTION_TOLERANCE,
   },
 ];
 
@@ -99,7 +108,7 @@ export const pollution = (
         cityImprovementRegistry
       ),
       populationDivisor: 4,
-      tolerance: 20,
+      tolerance: POLLUTION_TOLERANCE,
     },
     ruleRegistry,
     cityGrowthRegistry
