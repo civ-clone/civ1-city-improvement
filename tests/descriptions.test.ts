@@ -159,6 +159,7 @@ describe('descriptions', (): void => {
           source: 'population',
           with: [Industrialization, Automobile, MassProduction, Plastics],
         },
+        { type: 'pollution_tolerance', subject: Pollution, value: 20 },
       ]
     );
   });
