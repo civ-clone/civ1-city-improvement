@@ -1,4 +1,11 @@
 import * as CityImprovements from '../CityImprovements';
+import {
+  Automobile,
+  Industrialization,
+  MassProduction,
+  Plastics,
+} from '@civ-clone/civ1-science/Advances';
+import { Pollution } from '@civ-clone/civ1-world/TileImprovements';
 import { EffectDescription } from '@civ-clone/core-rule/Description';
 import CityImprovement from '@civ-clone/core-city-improvement/CityImprovement';
 import Rule from '@civ-clone/core-rule/Rule';
@@ -133,13 +140,24 @@ describe('descriptions', (): void => {
     );
   });
 
-  it('Mass Transit stops the population polluting, on the rule that rolls for pollution', (): void => {
+  it('Mass Transit stops the population polluting, and Pollution says what causes it, on the rule that rolls for pollution', (): void => {
     expect(described(pollution()).map(([, description]) => description)).to.eql(
       [
         {
           type: 'pollution_source_removed',
           subject: CityImprovements.MassTransit,
           source: 'population',
+        },
+        {
+          type: 'caused_by',
+          subject: Pollution,
+          source: 'production',
+        },
+        {
+          type: 'caused_by',
+          subject: Pollution,
+          source: 'population',
+          with: [Industrialization, Automobile, MassProduction, Plastics],
         },
       ]
     );

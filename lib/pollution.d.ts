@@ -10,8 +10,9 @@ import Yield from '@civ-clone/core-yield/Yield';
 export declare const pollutingAdvances: (typeof Automobile)[];
 export declare const cleanedBy: (typeof MassTransit)[];
 /**
- * What the pollution rules say about the improvements above (civ-clone/web-renderer#1196), for each rule that rolls
- *  for pollution with `pollution` to give, so a rule that takes the place of Civ1's says it too.
+ * What the pollution rules say about the improvements above (civ-clone/web-renderer#1196), and what causes Pollution
+ *  (civ-clone/web-renderer#621): a city's shields, and its citizens, more with each polluting advance. For each rule
+ *  that rolls for pollution with `pollution` to give, so a rule that takes the place of Civ1's says it too.
  */
 export declare const pollutionDescriptions: () => EffectDescription[];
 /**
